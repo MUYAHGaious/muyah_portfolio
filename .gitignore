@@ -1,8 +1,42 @@
+# Secrets — never commit
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Node
+node_modules/
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+.npm
+.pnpm-store/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Runtime data
+uploads/
+caddy_data/
+pgdata/
+
+# Editors / OS
 .DS_Store
-node_modules
-.idea
-package-lock.json
-/build
 .vscode/
 .idea/
-vite.config.*s.*
+Thumbs.db
+
+# Test artifacts
+playwright-report/
+test-results/
