@@ -19,8 +19,14 @@ export default defineConfig({
     // The local stack uses Caddy's internal CA, which is not publicly trusted.
     ignoreHTTPSErrors: true,
   },
+  /**
+   * `channel: "chrome"` drives the Chrome already installed on the machine
+   * instead of Playwright's bundled build. That avoids a ~150MB download and
+   * keeps the suite runnable anywhere Chrome exists. Drop the channel and run
+   * `npx playwright install chromium` if you would rather pin the browser.
+   */
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "mobile", use: { ...devices["Pixel 7"] } },
+    { name: "chromium", use: { ...devices["Desktop Chrome"], channel: "chrome" } },
+    { name: "mobile", use: { ...devices["Pixel 7"], channel: "chrome" } },
   ],
 });

@@ -4,7 +4,9 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="rule-top mt-24">
+    // No top margin: every page section already ends with its own bottom
+    // padding, and stacking the two left a conspicuous void above the rule.
+    <footer className="rule-top">
       <div className="page-shell grid-field py-10">
         <div className="col-span-12 sm:col-span-4">
           <p className="label-micro">Contact</p>

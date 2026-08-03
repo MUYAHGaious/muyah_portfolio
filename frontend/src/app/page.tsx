@@ -105,7 +105,7 @@ export default async function HomePage() {
       )}
 
       {recent.length > 0 && (
-        <section className="page-shell pb-8">
+        <section className="page-shell pb-20 sm:pb-28">
           <div className="grid-field mb-6">
             <h2 className="col-span-6 label-micro">Recent writing</h2>
             <p className="col-span-6 text-right">
