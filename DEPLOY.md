@@ -67,13 +67,13 @@ docker compose ps
 docker compose logs -f caddy
 ```
 
-## 5. Create the database tables
+Database migrations run automatically when the `api` container starts, so there
+is no separate schema step.
 
-```bash
-docker compose exec api alembic upgrade head
-```
+## 5. Add starter content (optional)
 
-Optionally add placeholder content so the site isn't blank while you fill it in:
+Adds placeholder projects and settings so the site isn't blank while you fill it
+in. Skip it if you'd rather start empty.
 
 ```bash
 docker compose exec api python -m app.scripts.seed_content
@@ -95,8 +95,9 @@ Then fill in Settings, add your real projects, and delete the placeholders.
 ```bash
 git pull
 docker compose up -d --build
-docker compose exec api alembic upgrade head   # only if migrations changed
 ```
+
+Migrations are applied on start, so nothing else is needed.
 
 ## Email for the contact form
 
@@ -138,8 +139,10 @@ which it is.
 **`502 Bad Gateway`.** The `web` or `api` container isn't healthy yet.
 `docker compose ps` shows status; `docker compose logs api` shows why.
 
-**The site loads but has no content.** The migration probably hasn't run:
-`docker compose exec api alembic upgrade head`.
+**The site loads but has no content.** Expected on a fresh install — nothing has
+been added yet. Sign in at `/admin` and add a project, or run the seed script in
+step 5. If you think migrations failed, `docker compose logs api` shows the
+Alembic output from startup.
 
 **Can't sign in.** The admin account is created on the API's *first* start. If
 you changed `ADMIN_PASSWORD` after that, it had no effect. To reset, exec into
@@ -151,7 +154,6 @@ restart `api` to have it reseeded from `.env`.
 ```bash
 cp .env.example .env      # DOMAIN=localhost is fine
 docker compose up -d --build
-docker compose exec api alembic upgrade head
 ```
 
 Caddy issues a local certificate for `localhost`; your browser will warn about

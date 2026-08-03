@@ -29,8 +29,8 @@ provider, no font CDN, no email SaaS required.
 ## Deploying
 
 See **[DEPLOY.md](DEPLOY.md)**. Short version: point a domain at your server,
-fill in `.env`, run `docker compose up -d --build`, then
-`docker compose exec api alembic upgrade head`.
+fill in `.env`, run `docker compose up -d --build`. Migrations apply themselves
+on start, and Caddy handles the certificate.
 
 ## Developing
 

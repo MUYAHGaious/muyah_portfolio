@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Migrations are applied separately (`alembic upgrade head`) so that startup
-    # never mutates schema implicitly. Seeding only inserts rows.
+    # Schema is already in place: the container entrypoint runs
+    # `alembic upgrade head` before uvicorn starts. This only inserts rows.
     async with SessionFactory() as db:
         await ensure_admin_user(db)
         await ensure_site_settings(db)

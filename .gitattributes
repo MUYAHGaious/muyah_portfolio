@@ -1,0 +1,20 @@
+# Normalise line endings in the repository.
+* text=auto
+
+# Files consumed by Linux inside containers must keep LF. A shell script that
+# gets checked out with CRLF fails with a confusing "no such file or directory",
+# because the kernel reads the trailing \r as part of the interpreter path.
+*.sh text eol=lf
+Dockerfile text eol=lf
+*.Dockerfile text eol=lf
+docker-compose.yml text eol=lf
+Caddyfile text eol=lf
+.env.example text eol=lf
+
+# Binary — never touch.
+*.woff2 binary
+*.png binary
+*.jpg binary
+*.webp binary
+*.ico binary
+*.pdf binary

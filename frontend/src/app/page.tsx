@@ -33,19 +33,31 @@ export default async function HomePage() {
           )}
         </div>
 
+        {/* A colophon rule, not a stats row. Counts are only shown when they are
+            non-zero — "Writing: 0" is not a fact worth leading with. */}
         <dl className="rule-top mt-12 grid-field py-4 text-small">
-          <div className="col-span-6 sm:col-span-3">
-            <dt className="label-micro">Based in</dt>
-            <dd className="mt-1">{settings.location || "—"}</dd>
-          </div>
-          <div className="col-span-6 sm:col-span-3">
-            <dt className="label-micro">Projects</dt>
-            <dd className="mt-1">{projects.length}</dd>
-          </div>
-          <div className="col-span-6 sm:col-span-3 mt-4 sm:mt-0">
-            <dt className="label-micro">Writing</dt>
-            <dd className="mt-1">{posts.total}</dd>
-          </div>
+          {settings.location && (
+            <div className="col-span-6 sm:col-span-3">
+              <dt className="label-micro">Based in</dt>
+              <dd className="mt-1">{settings.location}</dd>
+            </div>
+          )}
+          {projects.length > 0 && (
+            <div className="col-span-6 sm:col-span-3">
+              <dt className="label-micro">Selected work</dt>
+              <dd className="mt-1">
+                {projects.length} {projects.length === 1 ? "project" : "projects"}
+              </dd>
+            </div>
+          )}
+          {posts.total > 0 && (
+            <div className="col-span-6 sm:col-span-3 mt-4 sm:mt-0">
+              <dt className="label-micro">Writing</dt>
+              <dd className="mt-1">
+                {posts.total} {posts.total === 1 ? "post" : "posts"}
+              </dd>
+            </div>
+          )}
           <div className="col-span-6 sm:col-span-3 mt-4 sm:mt-0">
             <dt className="label-micro">Contact</dt>
             <dd className="mt-1">
