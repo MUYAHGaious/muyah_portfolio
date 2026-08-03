@@ -43,10 +43,14 @@ Open `.env` and fill in every empty value. Generate the secrets rather than
 inventing them:
 
 ```bash
-openssl rand -base64 24   # POSTGRES_PASSWORD
+openssl rand -hex 24      # POSTGRES_PASSWORD  (hex, not base64 — see below)
 openssl rand -hex 32      # SECRET_KEY
 openssl rand -base64 18   # ADMIN_PASSWORD
 ```
+
+`POSTGRES_PASSWORD` must be hex. It gets interpolated into a database
+connection URL, and the `+` and `/` characters that `base64` produces would
+corrupt it. `ADMIN_PASSWORD` is never part of a URL, so base64 is fine there.
 
 Set `DOMAIN` to your domain **without** `https://` or a trailing slash.
 

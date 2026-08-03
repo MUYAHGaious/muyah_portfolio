@@ -14,7 +14,10 @@ from app.core.db import Base
 import app.models  # noqa: F401
 
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.database_url)
+
+# The URL is handed straight to the engine rather than written into the ini via
+# set_main_option. A percent-encoded password (say "%2F" for a "/") would
+# otherwise be mangled by ConfigParser's interpolation.
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
@@ -42,7 +45,7 @@ def do_run_migrations(connection) -> None:
 
 async def run_migrations_online() -> None:
     connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        {"sqlalchemy.url": settings.database_url},
         prefix="sqlalchemy.",
         poolclass=NullPool,
     )

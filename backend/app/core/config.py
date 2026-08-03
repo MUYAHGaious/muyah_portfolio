@@ -2,7 +2,9 @@
 
 from functools import lru_cache
 from typing import Literal
+from urllib.parse import quote
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -12,7 +14,34 @@ class Settings(BaseSettings):
     env: Literal["dev", "test", "prod"] = "dev"
 
     # Database — asyncpg in production, aiosqlite under test.
+    #
+    # Set DATABASE_URL directly, or supply the POSTGRES_* parts and let them be
+    # assembled below. The assembled form percent-encodes the credentials, so a
+    # password containing "/", "+", "@" or ":" cannot corrupt the URL.
     database_url: str = "postgresql+asyncpg://portfolio:portfolio@localhost:5432/portfolio"
+
+    postgres_user: str = ""
+    postgres_password: str = ""
+    postgres_db: str = ""
+    postgres_host: str = "db"
+    postgres_port: int = 5432
+
+    @model_validator(mode="after")
+    def _assemble_database_url(self) -> "Settings":
+        # An explicit DATABASE_URL always wins; this only fills in the gap.
+        if "database_url" in self.model_fields_set or not self.postgres_password:
+            return self
+
+        user = quote(self.postgres_user or "portfolio", safe="")
+        password = quote(self.postgres_password, safe="")
+        database = self.postgres_db or "portfolio"
+
+        object.__setattr__(
+            self,
+            "database_url",
+            f"postgresql+asyncpg://{user}:{password}@{self.postgres_host}:{self.postgres_port}/{database}",
+        )
+        return self
 
     # Signs JWTs and salts the analytics visitor hash. Must be overridden in production.
     secret_key: str = "dev-only-insecure-key-change-me"
