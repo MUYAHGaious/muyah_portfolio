@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Archivo } from "next/font/google";
+import localFont from "next/font/local";
 
 import { PageViewTracker } from "@/components/PageViewTracker";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -9,14 +9,20 @@ import { getSettings } from "@/lib/api";
 import "./globals.css";
 
 /**
- * One grotesque, many weights — the Swiss convention. Self-hosted by next/font,
- * so there is no render-blocking request to a font CDN.
+ * One grotesque, many weights — the Swiss convention.
+ *
+ * The variable font file is committed to the repo rather than pulled from Google
+ * Fonts at build time. That keeps the build hermetic (no network dependency when
+ * the image is built on the VPS) and means no request ever leaves the visitor's
+ * browser for a third-party CDN.
  */
-const archivo = Archivo({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+const archivo = localFont({
+  src: "../fonts/Archivo-Variable.woff2",
+  weight: "400 700",
+  style: "normal",
   variable: "--font-archivo",
   display: "swap",
+  fallback: ["Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
 });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
