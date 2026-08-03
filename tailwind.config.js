@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
     "./public/index.html"
@@ -7,39 +8,24 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Primary Colors
-        'primary': '#0066FF', // electric-blue
-        'primary-foreground': '#FFFFFF', // white
-        
-        // Secondary Colors
-        'secondary': '#1A1A1A', // deep-charcoal
-        'secondary-foreground': '#FFFFFF', // white
-        
-        // Accent Colors
-        'accent': '#00FFCC', // cyan-highlight
-        'accent-foreground': '#0A0A0A', // near-black
-        
-        // Background Colors
-        'background': '#0A0A0A', // near-black
-        'surface': '#1F1F1F', // elevated-container
-        
-        // Text Colors
-        'text-primary': '#FFFFFF', // white
-        'text-secondary': '#A0A0A0', // medium-gray
-        
-        // Status Colors
-        'success': '#00FF88', // bright-green
-        'success-foreground': '#0A0A0A', // near-black
-        
-        'warning': '#FFB800', // amber
-        'warning-foreground': '#0A0A0A', // near-black
-        
-        'error': '#FF3366', // vibrant-red-pink
-        'error-foreground': '#FFFFFF', // white
-        
-        // Border Colors
-        'border': 'rgba(255, 255, 255, 0.1)', // subtle-white-border
-        'border-input': 'rgba(255, 255, 255, 0.1)', // input-border
+        'primary': 'var(--color-primary)',
+        'primary-foreground': 'var(--color-primary-foreground)',
+        'secondary': 'var(--color-secondary)',
+        'secondary-foreground': 'var(--color-secondary-foreground)',
+        'accent': 'var(--color-accent)',
+        'accent-foreground': 'var(--color-accent-foreground)',
+        'background': 'var(--color-background)',
+        'surface': 'var(--color-surface)',
+        'text-primary': 'var(--color-text-primary)',
+        'text-secondary': 'var(--color-text-secondary)',
+        'success': 'var(--color-success)',
+        'success-foreground': 'var(--color-success-foreground)',
+        'warning': 'var(--color-warning)',
+        'warning-foreground': 'var(--color-warning-foreground)',
+        'error': 'var(--color-error)',
+        'error-foreground': 'var(--color-error-foreground)',
+        'border': 'var(--color-border)',
+        'border-input': 'var(--color-border-input)',
       },
       fontFamily: {
         'sans': ['Inter', 'sans-serif'],

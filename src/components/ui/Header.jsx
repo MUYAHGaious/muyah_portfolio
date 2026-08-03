@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Icon from '../AppIcon';
+import { useTheme } from '../../contexts/ThemeContext';
+import { Sun, Moon } from 'lucide-react';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
 
   const navigationItems = [
     { label: 'Home', path: '/portfolio-homepage', icon: 'Home' },
@@ -49,7 +52,7 @@ const Header = () => {
     <>
       <header 
         className={`fixed top-0 left-0 right-0 z-100 transition-all duration-300 ${
-          isScrolled ? 'backdrop-blur-nav shadow-elevated' : 'bg-transparent'
+          isScrolled ? 'bg-background/80 backdrop-blur-nav shadow-elevated' : 'bg-transparent'
         }`}
       >
         <nav className="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -85,7 +88,7 @@ const Header = () => {
               ))}
             </div>
 
-            {/* Desktop Social Links */}
+            {/* Desktop Social Links & Theme Toggle */}
             <div className="hidden lg:flex items-center space-x-4">
               {socialLinks.map((social) => (
                 <button
@@ -97,6 +100,13 @@ const Header = () => {
                   <Icon name={social.icon} size={18} />
                 </button>
               ))}
+               <button
+                  onClick={toggleTheme}
+                  className="text-text-secondary hover:text-primary nav-transition p-2 rounded-lg hover:bg-surface/50 hover-glow"
+                  aria-label="Toggle theme"
+                >
+                  {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+                </button>
             </div>
 
             {/* Mobile Menu Button */}
@@ -135,8 +145,8 @@ const Header = () => {
                   <span className="font-medium">{item.label}</span>
                 </Link>
               ))}
-
-              {/* Mobile Social Links */}
+              
+              {/* Mobile Social Links & Theme Toggle */}
               <div className="pt-4 border-t border-border">
                 <p className="text-text-secondary text-sm font-medium mb-3 px-4">Connect</p>
                 <div className="flex space-x-4 px-4">
@@ -150,6 +160,13 @@ const Header = () => {
                       <Icon name={social.icon} size={20} />
                     </button>
                   ))}
+                  <button
+                    onClick={toggleTheme}
+                    className="flex items-center justify-center w-12 h-12 rounded-lg bg-surface hover:bg-primary/10 text-text-secondary hover:text-primary nav-transition hover-glow"
+                    aria-label="Toggle theme"
+                  >
+                   {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+                  </button>
                 </div>
               </div>
             </div>

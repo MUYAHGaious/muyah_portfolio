@@ -50,6 +50,27 @@
     --animation-duration-normal: 200ms;
     --animation-duration-slow: 300ms;
   }
+
+  .light {
+    --color-primary: #0066FF;
+    --color-primary-foreground: #FFFFFF;
+    --color-secondary: #F0F0F0;
+    --color-secondary-foreground: #0A0A0A;
+    --color-accent: #0099FF;
+    --color-accent-foreground: #FFFFFF;
+    --color-background: #FFFFFF;
+    --color-surface: #F8F8F8;
+    --color-text-primary: #0A0A0A;
+    --color-text-secondary: #606060;
+    --color-success: #00CC66;
+    --color-success-foreground: #FFFFFF;
+    --color-warning: #FFAA00;
+    --color-warning-foreground: #FFFFFF;
+    --color-error: #FF3366;
+    --color-error-foreground: #FFFFFF;
+    --color-border: rgba(0, 0, 0, 0.1);
+    --color-border-input: rgba(0, 0, 0, 0.1);
+  }
   
   * {
     border-color: var(--color-border);
@@ -88,7 +109,6 @@
   
   .backdrop-blur-nav {
     backdrop-filter: blur(12px);
-    background-color: rgba(10, 10, 10, 0.8);
   }
   
   .gradient-border {

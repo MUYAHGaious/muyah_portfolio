@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Button from 'components/ui/Button';
 import AnimatedBackground from './AnimatedBackground';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 const HeroSection = () => {
+  const { theme } = useTheme();
   const [currentTagline, setCurrentTagline] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -44,7 +46,7 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <AnimatedBackground className="z-0" />
+      <AnimatedBackground className="z-0" theme={theme} />
       
       <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
@@ -136,14 +138,12 @@ const HeroSection = () => {
             initial={{ opacity: 0 }}
             animate={isVisible ? { opacity: 1 } : {}}
             transition={{ duration: 0.8, delay: 1.0 }}
-            className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+            className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
           >
             <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 2, repeat: Infinity, repeatType: 'loop' }}
-              className="w-6 h-10 border-2 border-primary rounded-full flex justify-center p-1"
+              className="w-[1200px] h-[2000px] border-2 border-primary rounded-full flex justify-center p-1"
             >
-              <div className="w-1 h-2 bg-primary rounded-full" />
+              <div className="w-[200px] h-[400px] bg-primary rounded-full" />
             </motion.div>
           </motion.div>
         </div>
