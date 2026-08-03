@@ -2,9 +2,11 @@
 
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from app.core.config import settings
@@ -43,6 +45,14 @@ def create_app() -> FastAPI:
         allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
         allow_headers=["*"],
     )
+
+    # Caddy serves /uploads straight from the shared volume in production, so
+    # these bytes normally never touch Python. The mount exists so that
+    # `npm run dev` against a bare API still resolves images, and so a
+    # misconfigured proxy degrades to "slower" rather than "broken".
+    upload_root = Path(settings.upload_dir)
+    upload_root.mkdir(parents=True, exist_ok=True)
+    app.mount("/uploads", StaticFiles(directory=upload_root), name="uploads")
 
     from app.routers import admin, analytics, auth, contact, media, public
 
