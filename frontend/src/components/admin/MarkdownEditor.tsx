@@ -49,7 +49,7 @@ export function MarkdownEditor({
           onChange={(event) => onChange(event.target.value)}
           rows={rows}
           spellCheck
-          className="w-full border border-rule bg-transparent px-3 py-2 font-mono text-small leading-relaxed outline-none transition-colors duration-150 focus:border-signal resize-y"
+          className="w-full border border-field bg-transparent px-3 py-2 font-mono text-small leading-relaxed outline-none transition-colors duration-150 focus:border-signal resize-y"
         />
       )}
     </div>

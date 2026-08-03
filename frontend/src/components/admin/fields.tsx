@@ -11,7 +11,7 @@ import { useState } from "react";
  */
 
 const INPUT =
-  "w-full bg-transparent border border-rule px-3 py-2 text-small outline-none transition-colors duration-150 focus:border-signal";
+  "w-full bg-transparent border border-field px-3 py-2 text-small outline-none transition-colors duration-150 focus:border-signal";
 
 export function Field({
   label,
@@ -97,10 +97,12 @@ export function Button({
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary" | "danger";
 }) {
+  // Button outlines use --field, not --rule: a control's boundary has to meet
+  // 3:1 non-text contrast, which the hairline divider colour does not.
   const styles = {
     primary: "border-ink bg-ink text-paper hover:opacity-85",
-    secondary: "border-rule hover:border-ink",
-    danger: "border-rule text-signal hover:border-signal",
+    secondary: "border-field hover:border-ink",
+    danger: "border-field text-signal hover:border-signal",
   }[variant];
 
   return (

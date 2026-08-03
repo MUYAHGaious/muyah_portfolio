@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 type Status = "idle" | "sending" | "sent" | "error";
 
 const FIELD_CLASS =
-  "w-full bg-transparent border-b border-rule py-2 text-base outline-none transition-colors duration-150 focus:border-signal";
+  "w-full bg-transparent border-b border-field py-2 text-base outline-none transition-colors duration-150 focus:border-signal";
 
 export function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");

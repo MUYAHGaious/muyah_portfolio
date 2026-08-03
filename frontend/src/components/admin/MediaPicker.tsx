@@ -61,7 +61,7 @@ export function MediaPicker({
             />
           )
         ) : (
-          <div className="flex h-20 w-20 items-center justify-center border border-dashed border-rule text-micro text-muted">
+          <div className="flex h-20 w-20 items-center justify-center border border-dashed border-field text-micro text-muted">
             None
           </div>
         )}

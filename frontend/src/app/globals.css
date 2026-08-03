@@ -18,6 +18,12 @@
   --wash: #f2f2f2;
   --signal: #d6210f;
 
+  /* Form-control borders, kept separate from --rule. A hairline divider can be
+     as faint as the design wants, but an input's boundary is what tells you
+     where to click — WCAG 1.4.11 requires 3:1 for it. --rule is ~1.4:1 on
+     white; this is ~3.4:1. */
+  --field: #8a8a8a;
+
   color-scheme: light;
 }
 
@@ -29,6 +35,7 @@
   --wash: #151515;
   /* Lifted from the light-mode red, which fails contrast on near-black. */
   --signal: #ff4a2e;
+  --field: #6a6a6a;
 
   color-scheme: dark;
 }
@@ -41,6 +48,7 @@
     --rule: #2a2a2a;
     --wash: #151515;
     --signal: #ff4a2e;
+    --field: #6a6a6a;
 
     color-scheme: dark;
   }
@@ -53,6 +61,7 @@
   --color-rule: var(--rule);
   --color-wash: var(--wash);
   --color-signal: var(--signal);
+  --color-field: var(--field);
 
   --font-sans: var(--font-archivo), "Helvetica Neue", Helvetica, Arial, sans-serif;
 
