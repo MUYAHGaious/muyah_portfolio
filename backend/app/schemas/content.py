@@ -208,19 +208,23 @@ class SocialLink(BaseModel):
 
 class SettingsUpdate(BaseModel):
     name: str | None = Field(default=None, max_length=200)
+    greeting: str | None = Field(default=None, max_length=100)
     tagline: str | None = Field(default=None, max_length=300)
     bio_md: str | None = None
     location: str | None = Field(default=None, max_length=200)
     email: str | None = Field(default=None, max_length=255)
     socials: list[SocialLink] | None = None
     resume_media_id: int | None = None
+    avatar_id: int | None = None
 
 
 class SettingsOut(ORMModel):
     name: str
+    greeting: str
     tagline: str
     bio_md: str
     location: str
     email: str
     socials: list[dict[str, Any]]
     resume_media: MediaOut | None
+    avatar: MediaOut | None

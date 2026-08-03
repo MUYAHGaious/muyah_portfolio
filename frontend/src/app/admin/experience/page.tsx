@@ -47,11 +47,11 @@ export default function ExperiencePage() {
         </Button>
       </div>
 
-      {error && <p className="mt-4 text-small text-signal">{error}</p>}
-      {loading && !entries && <p className="mt-4 text-small text-muted">Loading…</p>}
+      {error && <p className="mt-4 text-small text-ember-deep">{error}</p>}
+      {loading && !entries && <p className="mt-4 text-small text-ink-soft">Loading…</p>}
 
       {entries && entries.length === 0 && (
-        <p className="mt-8 text-small text-muted">No entries yet.</p>
+        <p className="mt-8 text-small text-ink-soft">No entries yet.</p>
       )}
 
       <div className="mt-6 space-y-3">
@@ -103,23 +103,23 @@ function EntryRow({ entry, onChanged }: { entry: Experience; onChanged: () => Pr
   }
 
   return (
-    <div className="border border-rule">
+    <div className="border border-line">
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
         aria-expanded={open}
-        className="flex w-full items-baseline justify-between gap-4 px-4 py-3 text-left transition-colors duration-150 hover:text-signal"
+        className="flex w-full items-baseline justify-between gap-4 px-4 py-3 text-left transition-colors duration-150 hover:text-ember-deep"
       >
         <span className="text-small">
-          {draft.role} <span className="text-muted">· {draft.company}</span>
+          {draft.role} <span className="text-ink-soft">· {draft.company}</span>
         </span>
-        <span className="text-micro uppercase tracking-[0.08em] text-muted">
+        <span className="text-micro uppercase tracking-[0.08em] text-ink-soft">
           {draft.published ? "Visible" : "Hidden"} {open ? "−" : "+"}
         </span>
       </button>
 
       {open && (
-        <div className="space-y-5 border-t border-rule px-4 py-5">
+        <div className="space-y-5 border-t border-line px-4 py-5">
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Role">
               <TextInput

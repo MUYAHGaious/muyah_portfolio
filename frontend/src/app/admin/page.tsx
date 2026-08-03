@@ -25,8 +25,8 @@ export default function AdminOverview() {
 
   const { data, loading, error } = useAsync(loadStats);
 
-  if (loading && !data) return <p className="text-small text-muted">Loading…</p>;
-  if (error) return <p className="text-small text-signal">{error}</p>;
+  if (loading && !data) return <p className="text-small text-ink-soft">Loading…</p>;
+  if (error) return <p className="text-small text-ember-deep">{error}</p>;
   if (!data) return null;
 
   const [analytics, messages, projects, posts] = data;
@@ -59,8 +59,8 @@ export default function AdminOverview() {
               key={option}
               type="button"
               onClick={() => setRange(option)}
-              className={`text-small transition-colors duration-150 hover:text-signal ${
-                option === range ? "text-signal" : "text-muted"
+              className={`text-small transition-colors duration-150 hover:text-ember-deep ${
+                option === range ? "text-ember-deep" : "text-ink-soft"
               }`}
             >
               {option}d
@@ -69,20 +69,20 @@ export default function AdminOverview() {
         </div>
       </div>
 
-      <dl className="rule-top mt-6 grid grid-cols-2 sm:grid-cols-5">
+      <dl className="border-t border-line mt-6 grid grid-cols-2 sm:grid-cols-5">
         {tiles.map((tile) => (
-          <div key={tile.label} className="rule-bottom border-r border-rule px-4 py-5 last:border-r-0">
-            <dt className="label-micro">{tile.label}</dt>
+          <div key={tile.label} className="border-b border-line border-r border-line px-4 py-5 last:border-r-0">
+            <dt className="eyebrow">{tile.label}</dt>
             <dd className="mt-2 text-h3 font-semibold">
               {tile.href ? (
-                <Link href={tile.href} className="hover:text-signal transition-colors duration-150">
+                <Link href={tile.href} className="hover:text-ember-deep transition-colors duration-150">
                   {tile.value}
                 </Link>
               ) : (
                 tile.value
               )}
             </dd>
-            {tile.hint && <p className="mt-1 text-micro text-muted normal-case">{tile.hint}</p>}
+            {tile.hint && <p className="mt-1 text-micro text-ink-soft normal-case">{tile.hint}</p>}
           </div>
         ))}
       </dl>
@@ -109,23 +109,23 @@ function TrafficChart({ daily }: { daily: AnalyticsSummary["daily"] }) {
 
   return (
     <section className="mt-12">
-      <h2 className="label-micro">Views per day</h2>
+      <h2 className="eyebrow">Views per day</h2>
 
-      <div className="rule-bottom mt-4 flex h-40 items-end gap-px" role="img" aria-label={`Daily views, peak ${peak}`}>
+      <div className="border-b border-line mt-4 flex h-40 items-end gap-px" role="img" aria-label={`Daily views, peak ${peak}`}>
         {daily.map((day) => (
           <div
             key={day.day}
-            className="group relative flex-1 bg-rule transition-colors duration-150 hover:bg-signal"
+            className="group relative flex-1 bg-rule transition-colors duration-150 hover:bg-ember"
             style={{ height: `${Math.max(2, (day.views / peak) * 100)}%` }}
           >
-            <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 whitespace-nowrap bg-ink px-2 py-1 text-micro normal-case text-paper group-hover:block">
+            <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 whitespace-nowrap bg-ink px-2 py-1 text-micro normal-case text-surface group-hover:block">
               {day.day}: {day.views} views · {day.visitors} visitors
             </span>
           </div>
         ))}
       </div>
 
-      <div className="mt-2 flex justify-between text-micro text-muted normal-case">
+      <div className="mt-2 flex justify-between text-micro text-ink-soft normal-case">
         <span>{daily[0]?.day}</span>
         <span>{daily.at(-1)?.day}</span>
       </div>
@@ -136,15 +136,15 @@ function TrafficChart({ daily }: { daily: AnalyticsSummary["daily"] }) {
 function TopList({ title, items }: { title: string; items: { label: string; count: number }[] }) {
   return (
     <section>
-      <h2 className="label-micro">{title}</h2>
+      <h2 className="eyebrow">{title}</h2>
       {items.length === 0 ? (
-        <p className="mt-3 text-small text-muted">No data yet.</p>
+        <p className="mt-3 text-small text-ink-soft">No data yet.</p>
       ) : (
-        <ul className="rule-top mt-3">
+        <ul className="border-t border-line mt-3">
           {items.map((item) => (
-            <li key={item.label} className="rule-bottom flex justify-between gap-4 py-2 text-small">
+            <li key={item.label} className="border-b border-line flex justify-between gap-4 py-2 text-small">
               <span className="truncate">{item.label}</span>
-              <span className="text-muted tabular-nums">{item.count}</span>
+              <span className="text-ink-soft tabular-nums">{item.count}</span>
             </li>
           ))}
         </ul>

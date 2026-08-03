@@ -12,7 +12,7 @@ export function Markdown({ children }: { children: string }) {
   if (!children.trim()) return null;
 
   return (
-    <div className="prose-swiss">
+    <div className="prose-warm">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{

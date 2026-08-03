@@ -25,22 +25,22 @@ export function MarkdownEditor({
   return (
     <div>
       <div className="mb-1.5 flex items-baseline justify-between">
-        <span className="label-micro">Body (Markdown)</span>
+        <span className="eyebrow">Body (Markdown)</span>
         <button
           type="button"
           onClick={() => setPreview((current) => !current)}
-          className="text-micro uppercase tracking-[0.08em] text-muted hover:text-signal transition-colors duration-150"
+          className="text-micro uppercase tracking-[0.08em] text-ink-soft hover:text-ember-deep transition-colors duration-150"
         >
           {preview ? "Edit" : "Preview"}
         </button>
       </div>
 
       {preview ? (
-        <div className="border border-rule px-4 py-3 min-h-[20rem]">
+        <div className="border border-line px-4 py-3 min-h-[20rem]">
           {value.trim() ? (
             <Markdown>{value}</Markdown>
           ) : (
-            <p className="text-small text-muted">Nothing to preview yet.</p>
+            <p className="text-small text-ink-soft">Nothing to preview yet.</p>
           )}
         </div>
       ) : (
@@ -49,7 +49,7 @@ export function MarkdownEditor({
           onChange={(event) => onChange(event.target.value)}
           rows={rows}
           spellCheck
-          className="w-full border border-field bg-transparent px-3 py-2 font-mono text-small leading-relaxed outline-none transition-colors duration-150 focus:border-signal resize-y"
+          className="w-full border border-field bg-transparent px-3 py-2 font-mono text-small leading-relaxed outline-none transition-colors duration-150 focus:border-ember resize-y"
         />
       )}
     </div>

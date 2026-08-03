@@ -29,9 +29,9 @@ export function LoginForm({ onSuccess }: { onSuccess: () => void }) {
   }
 
   return (
-    <div className="page-shell flex min-h-dvh items-center justify-center">
+    <div className="shell flex min-h-dvh items-center justify-center">
       <form onSubmit={handleSubmit} className="w-full max-w-sm">
-        <p className="label-micro">Admin</p>
+        <p className="eyebrow">Admin</p>
         <h1 className="mt-2 text-h3 font-semibold">Sign in</h1>
 
         <div className="mt-8 space-y-5">

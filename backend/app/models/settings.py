@@ -25,9 +25,20 @@ class SiteSettings(Base):
     # [{"label": "GitHub", "url": "https://..."}, ...]
     socials: Mapped[list[dict[str, Any]]] = mapped_column(JSONType, default=list)
 
+    # Short line above the name in the hero, e.g. "Hello, I'm".
+    greeting: Mapped[str] = mapped_column(String(100), default="Hello, I'm")
+
     resume_media_id: Mapped[int | None] = mapped_column(
         ForeignKey("media.id", ondelete="SET NULL"), nullable=True
     )
-    resume_media: Mapped[Media | None] = relationship(lazy="selectin")
+    resume_media: Mapped[Media | None] = relationship(
+        lazy="selectin", foreign_keys=[resume_media_id]
+    )
+
+    # Cut-out portrait for the hero.
+    avatar_id: Mapped[int | None] = mapped_column(
+        ForeignKey("media.id", ondelete="SET NULL"), nullable=True
+    )
+    avatar: Mapped[Media | None] = relationship(lazy="selectin", foreign_keys=[avatar_id])
 
     updated_at: Mapped[datetime] = timestamp_column(onupdate=utcnow)

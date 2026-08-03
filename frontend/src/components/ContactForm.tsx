@@ -2,17 +2,19 @@
 
 import { useRef, useState } from "react";
 
+import { Button } from "@/components/ui/Button";
+
 type Status = "idle" | "sending" | "sent" | "error";
 
-const FIELD_CLASS =
-  "w-full bg-transparent border-b border-field py-2 text-base outline-none transition-colors duration-150 focus:border-signal";
+const FIELD =
+  "w-full rounded-[var(--r-sm)] border border-field bg-surface px-4 py-3 text-base text-ink " +
+  "outline-none transition-colors duration-200 placeholder:text-ink-faint focus:border-ember";
 
 export function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
 
-  // When the form was first rendered. The server rejects submissions that arrive
-  // implausibly fast, which is the cheapest bot filter available.
+  // Submissions arriving implausibly fast are rejected server-side as bots.
   const renderedAt = useRef(Date.now());
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -44,7 +46,7 @@ export function ContactForm() {
       const body = await response.json().catch(() => null);
       setError(
         response.status === 429
-          ? "You've sent several messages recently. Try again a bit later."
+          ? "You've sent a few messages recently. Try again a little later."
           : typeof body?.detail === "string"
             ? body.detail
             : "Something went wrong. Try again, or email me directly.",
@@ -58,9 +60,12 @@ export function ContactForm() {
 
   if (status === "sent") {
     return (
-      <div className="rule-top pt-6" role="status">
-        <p className="text-h3 font-semibold">Message sent.</p>
-        <p className="mt-2 text-muted max-w-[40ch]">
+      <div className="card animate-pop p-8 text-center sm:p-12" role="status">
+        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-ember/15 text-h3 text-ember-deep">
+          ✓
+        </span>
+        <p className="mt-5 text-h3 font-bold tracking-tight text-ink">Message sent.</p>
+        <p className="mx-auto mt-2 max-w-[38ch] text-small text-ink-soft">
           Thanks — it landed. I&apos;ll reply to the address you gave.
         </p>
       </div>
@@ -68,24 +73,31 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rule-top pt-8 space-y-8" noValidate>
-      {/* Honeypot. Hidden from people, irresistible to bots. Not display:none —
-          some bots skip those — and removed from the tab order and the a11y tree. */}
+    <form onSubmit={handleSubmit} className="card p-6 sm:p-9" noValidate>
+      {/* Honeypot: invisible to people, irresistible to bots, out of the tab order. */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
         <label htmlFor="website">Leave this field empty</label>
         <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <div className="grid-field">
-        <div className="col-span-12 sm:col-span-6">
-          <label htmlFor="name" className="label-micro block">
+      <div className="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label htmlFor="name" className="eyebrow mb-2 block">
             Your name
           </label>
-          <input id="name" name="name" type="text" required maxLength={200} className={FIELD_CLASS} />
+          <input
+            id="name"
+            name="name"
+            type="text"
+            required
+            maxLength={200}
+            placeholder="Ada Lovelace"
+            className={FIELD}
+          />
         </div>
 
-        <div className="col-span-12 sm:col-span-6 mt-6 sm:mt-0">
-          <label htmlFor="email" className="label-micro block">
+        <div>
+          <label htmlFor="email" className="eyebrow mb-2 block">
             Email
           </label>
           <input
@@ -94,20 +106,28 @@ export function ContactForm() {
             type="email"
             required
             maxLength={255}
-            className={FIELD_CLASS}
+            placeholder="you@example.com"
+            className={FIELD}
           />
         </div>
       </div>
 
-      <div>
-        <label htmlFor="subject" className="label-micro block">
+      <div className="mt-5">
+        <label htmlFor="subject" className="eyebrow mb-2 block">
           Subject <span className="normal-case tracking-normal">(optional)</span>
         </label>
-        <input id="subject" name="subject" type="text" maxLength={300} className={FIELD_CLASS} />
+        <input
+          id="subject"
+          name="subject"
+          type="text"
+          maxLength={300}
+          placeholder="What's this about?"
+          className={FIELD}
+        />
       </div>
 
-      <div>
-        <label htmlFor="message" className="label-micro block">
+      <div className="mt-5">
+        <label htmlFor="message" className="eyebrow mb-2 block">
           Message
         </label>
         <textarea
@@ -117,23 +137,22 @@ export function ContactForm() {
           rows={6}
           minLength={10}
           maxLength={10000}
-          className={`${FIELD_CLASS} resize-y`}
+          placeholder="Tell me what you're working on…"
+          className={`${FIELD} resize-y`}
         />
       </div>
 
       {status === "error" && (
-        <p role="alert" className="text-small text-signal">
+        <p role="alert" className="mt-5 text-small font-medium text-ember-deep">
           {error}
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={status === "sending"}
-        className="border border-ink px-6 py-3 text-small transition-colors duration-150 hover:bg-ink hover:text-paper disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-ink"
-      >
-        {status === "sending" ? "Sending…" : "Send message"}
-      </button>
+      <div className="mt-7">
+        <Button type="submit" variant="ember" disabled={status === "sending"}>
+          {status === "sending" ? "Sending…" : "Send message"}
+        </Button>
+      </div>
     </form>
   );
 }

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Markdown } from "@/components/Markdown";
+import { Reveal } from "@/components/motion/Reveal";
+import { Button } from "@/components/ui/Button";
 import { getPost, getPosts } from "@/lib/api";
 import { fullDate } from "@/lib/format";
 
@@ -34,45 +36,57 @@ export default async function PostPage({ params }: Params) {
   if (!post) notFound();
 
   return (
-    <article className="page-shell pt-16 pb-20 sm:pt-24">
-      <header className="grid-field">
-        <div className="col-span-12 sm:col-span-8 sm:col-start-4">
-          <p className="label-micro">
-            {post.published_at ? fullDate(post.published_at) : "Unpublished"}
-          </p>
-          <h1 className="mt-3 text-h2 font-semibold max-w-[20ch]">{post.title}</h1>
+    <article>
+      <section className="shell pt-3">
+        <div className="panel relative overflow-hidden px-6 py-12 sm:px-12 sm:py-16">
+          <div aria-hidden="true" className="glow -top-24 left-1/3 h-72 w-72" />
 
-          {post.tags.length > 0 && (
-            <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
+          <div className="relative mx-auto max-w-3xl">
+            <div className="flex flex-wrap items-center gap-3 animate-rise">
+              <span className="text-micro normal-case tracking-normal text-ink-faint">
+                {post.published_at ? fullDate(post.published_at) : "Unpublished"}
+              </span>
               {post.tags.map((tag) => (
-                <li key={tag}>
-                  <Link
-                    href={`/writing?tag=${encodeURIComponent(tag)}`}
-                    className="text-small text-muted hover:text-signal transition-colors duration-150"
-                  >
-                    {tag}
-                  </Link>
-                </li>
+                <Link
+                  key={tag}
+                  href={`/writing?tag=${encodeURIComponent(tag)}`}
+                  className="rounded-full bg-ember/15 px-3 py-1 text-micro font-semibold text-ember-deep transition-opacity hover:opacity-75"
+                >
+                  {tag}
+                </Link>
               ))}
-            </ul>
-          )}
-        </div>
-      </header>
+            </div>
 
-      <div className="rule-top mt-10 pt-10 grid-field">
-        <div className="col-span-12 sm:col-span-8 sm:col-start-4">
+            <h1
+              className="mt-4 text-h2 font-bold tracking-tight text-ink animate-rise"
+              style={{ animationDelay: "100ms" }}
+            >
+              {post.title}
+            </h1>
+
+            {post.excerpt && (
+              <p
+                className="mt-4 text-lead text-ink-soft animate-rise"
+                style={{ animationDelay: "180ms" }}
+              >
+                {post.excerpt}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="shell pt-12 sm:pt-16">
+        <Reveal className="mx-auto max-w-3xl">
           <Markdown>{post.body_md}</Markdown>
-        </div>
-      </div>
+        </Reveal>
 
-      <p className="rule-top mt-16 pt-6">
-        <Link
-          href="/writing"
-          className="text-small text-muted hover:text-signal transition-colors duration-150"
-        >
-          ← All writing
-        </Link>
-      </p>
+        <div className="mx-auto mt-12 max-w-3xl border-t border-line pt-8">
+          <Button href="/writing" variant="ghost">
+            ← All writing
+          </Button>
+        </div>
+      </section>
     </article>
   );
 }

@@ -14,7 +14,9 @@ import type {
   PostList,
   Post,
   Project,
+  Service,
   SiteSettings,
+  Testimonial,
 } from "@/lib/types";
 
 const API_BASE = process.env.API_INTERNAL_URL ?? "http://localhost:8000";
@@ -95,14 +97,24 @@ export async function getPost(slug: string): Promise<Post | null> {
 
 const FALLBACK_SETTINGS: SiteSettings = {
   name: "",
+  greeting: "Hello, I'm",
   tagline: "",
   bio_md: "",
   location: "",
   email: "",
   socials: [],
   resume_media: null,
+  avatar: null,
 };
 
 export async function getSettings(): Promise<SiteSettings> {
   return (await apiGetOrNull<SiteSettings>("/api/settings")) ?? FALLBACK_SETTINGS;
+}
+
+export async function getServices(): Promise<Service[]> {
+  return (await apiGetOrNull<Service[]>("/api/services")) ?? [];
+}
+
+export async function getTestimonials(): Promise<Testimonial[]> {
+  return (await apiGetOrNull<Testimonial[]>("/api/testimonials")) ?? [];
 }

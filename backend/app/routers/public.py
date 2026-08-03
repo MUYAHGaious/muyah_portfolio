@@ -4,7 +4,15 @@ from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import func, select
 
 from app.core.deps import DbSession
-from app.models import SINGLETON_ID, Experience, Post, Project, SiteSettings
+from app.models import (
+    SINGLETON_ID,
+    Experience,
+    Post,
+    Project,
+    Service,
+    SiteSettings,
+    Testimonial,
+)
 from app.schemas.content import (
     ExperienceOut,
     PostListOut,
@@ -12,6 +20,7 @@ from app.schemas.content import (
     ProjectOut,
     SettingsOut,
 )
+from app.schemas.service import ServiceOut, TestimonialOut
 
 router = APIRouter(prefix="/api", tags=["public"])
 
@@ -107,6 +116,28 @@ async def get_post(slug: str, db: DbSession) -> Post:
     if post is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Post not found")
     return post
+
+
+@router.get("/services", response_model=list[ServiceOut])
+async def list_services(db: DbSession) -> list[Service]:
+    return list(
+        await db.scalars(
+            select(Service)
+            .where(Service.published.is_(True))
+            .order_by(Service.sort_order.asc(), Service.id.asc())
+        )
+    )
+
+
+@router.get("/testimonials", response_model=list[TestimonialOut])
+async def list_testimonials(db: DbSession) -> list[Testimonial]:
+    return list(
+        await db.scalars(
+            select(Testimonial)
+            .where(Testimonial.published.is_(True))
+            .order_by(Testimonial.sort_order.asc(), Testimonial.id.asc())
+        )
+    )
 
 
 @router.get("/settings", response_model=SettingsOut)

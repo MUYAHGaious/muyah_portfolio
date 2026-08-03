@@ -39,32 +39,32 @@ export default function PostsList() {
         </Button>
       </div>
 
-      {error && <p className="mt-4 text-small text-signal">{error}</p>}
-      {loading && !posts && <p className="mt-4 text-small text-muted">Loading…</p>}
+      {error && <p className="mt-4 text-small text-ember-deep">{error}</p>}
+      {loading && !posts && <p className="mt-4 text-small text-ink-soft">Loading…</p>}
 
       {posts && posts.length === 0 && (
-        <p className="mt-8 text-small text-muted">No posts yet.</p>
+        <p className="mt-8 text-small text-ink-soft">No posts yet.</p>
       )}
 
       {posts && posts.length > 0 && (
-        <ul className="rule-top mt-6">
+        <ul className="border-t border-line mt-6">
           {posts.map((post) => (
             <li
               key={post.id}
-              className="rule-bottom flex flex-wrap items-baseline gap-x-4 gap-y-1 py-3"
+              className="border-b border-line flex flex-wrap items-baseline gap-x-4 gap-y-1 py-3"
             >
-              <span className="w-32 text-small text-muted">
+              <span className="w-32 text-small text-ink-soft">
                 {post.published_at ? fullDate(post.published_at) : "—"}
               </span>
 
               <Link
                 href={`/admin/posts/${post.id}`}
-                className="flex-1 min-w-40 text-small hover:text-signal transition-colors duration-150"
+                className="flex-1 min-w-40 text-small hover:text-ember-deep transition-colors duration-150"
               >
                 {post.title}
               </Link>
 
-              <span className="text-micro uppercase tracking-[0.08em] text-muted">
+              <span className="text-micro uppercase tracking-[0.08em] text-ink-soft">
                 {post.published ? "Published" : "Draft"}
               </span>
 
@@ -75,7 +75,7 @@ export default function PostsList() {
                   await api.delete(`/admin/posts/${post.id}`);
                   await reload();
                 }}
-                className="text-micro uppercase tracking-[0.08em] text-muted hover:text-signal transition-colors duration-150"
+                className="text-micro uppercase tracking-[0.08em] text-ink-soft hover:text-ember-deep transition-colors duration-150"
               >
                 Delete
               </button>

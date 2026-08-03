@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Field, Notice, TextArea, TextInput } from "@/components/admin/fields";
 import { MarkdownEditor } from "@/components/admin/MarkdownEditor";
 import { MediaPicker } from "@/components/admin/MediaPicker";
+import { EditorSkeleton } from "@/components/admin/EditorSkeleton";
 import { useAsync } from "@/components/admin/useAsync";
 import { api } from "@/lib/admin-api";
 import type { SiteSettings, SocialLink } from "@/lib/types";
@@ -42,6 +43,7 @@ export default function SettingsPage() {
     try {
       await api.patch<SiteSettings>("/admin/settings", {
         name: draft.name,
+        greeting: draft.greeting,
         tagline: draft.tagline,
         bio_md: draft.bio_md,
         location: draft.location,
@@ -49,6 +51,7 @@ export default function SettingsPage() {
         // Drop half-filled rows rather than saving a link with no destination.
         socials: draft.socials.filter((link) => link.label.trim() && link.url.trim()),
         resume_media_id: draft.resume_media?.id ?? null,
+        avatar_id: draft.avatar?.id ?? null,
       });
       setStatus("Saved.");
     } catch (caught) {
@@ -58,8 +61,8 @@ export default function SettingsPage() {
     }
   }
 
-  if (loading && !draft) return <p className="text-small text-muted">Loading…</p>;
-  if (error) return <p className="text-small text-signal">{error}</p>;
+  if (loading && !draft) return <EditorSkeleton />;
+  if (error) return <p className="text-small text-ember-deep">{error}</p>;
   if (!draft) return null;
 
   return (
@@ -92,6 +95,14 @@ export default function SettingsPage() {
           </Field>
         </div>
 
+        <Field label="Greeting" hint="Small line above your name in the hero, e.g. “Hello, I'm”.">
+          <TextInput
+            value={draft.greeting}
+            maxLength={100}
+            onChange={(event) => update("greeting", event.target.value)}
+          />
+        </Field>
+
         <Field label="Tagline" hint="One line under your name on the home page.">
           <TextArea
             rows={2}
@@ -100,6 +111,14 @@ export default function SettingsPage() {
             onChange={(event) => update("tagline", event.target.value)}
           />
         </Field>
+
+        <MediaPicker
+          label="Portrait (hero photo)"
+          value={draft.avatar?.id ?? null}
+          onChange={(mediaId) =>
+            update("avatar", mediaId === null ? null : ({ id: mediaId } as never))
+          }
+        />
 
         <Field label="Public email" hint="Shown in the footer and on the contact page.">
           <TextInput
@@ -126,7 +145,7 @@ export default function SettingsPage() {
 
         <div>
           <div className="mb-2 flex items-baseline justify-between">
-            <span className="label-micro">Social links</span>
+            <span className="eyebrow">Social links</span>
             <Button
               onClick={() => update("socials", [...draft.socials, { label: "", url: "" }])}
             >
@@ -135,7 +154,7 @@ export default function SettingsPage() {
           </div>
 
           {draft.socials.length === 0 ? (
-            <p className="text-small text-muted">No links yet.</p>
+            <p className="text-small text-ink-soft">No links yet.</p>
           ) : (
             <ul className="space-y-2">
               {draft.socials.map((link, index) => (
@@ -206,9 +225,9 @@ function PasswordSection() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rule-top mt-12 pt-8">
+    <form onSubmit={handleSubmit} className="border-t border-line mt-12 pt-8">
       <h2 className="text-small font-semibold">Change password</h2>
-      <p className="mt-1 text-micro text-muted normal-case">
+      <p className="mt-1 text-micro text-ink-soft normal-case">
         Do this now if you are still using the password from your .env file.
       </p>
 

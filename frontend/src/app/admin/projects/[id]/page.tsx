@@ -15,6 +15,7 @@ import {
 } from "@/components/admin/fields";
 import { MarkdownEditor } from "@/components/admin/MarkdownEditor";
 import { MediaPicker } from "@/components/admin/MediaPicker";
+import { EditorSkeleton } from "@/components/admin/EditorSkeleton";
 import { useAsync } from "@/components/admin/useAsync";
 import { api } from "@/lib/admin-api";
 import type { Project } from "@/lib/types";
@@ -67,8 +68,8 @@ export default function ProjectEditor() {
     }
   }
 
-  if (loading && !draft) return <p className="text-small text-muted">Loading…</p>;
-  if (error) return <p className="text-small text-signal">{error}</p>;
+  if (loading && !draft) return <EditorSkeleton />;
+  if (error) return <p className="text-small text-ember-deep">{error}</p>;
   if (!draft) return null;
 
   return (
@@ -76,7 +77,7 @@ export default function ProjectEditor() {
       <div className="flex items-baseline justify-between gap-4">
         <Link
           href="/admin/projects"
-          className="text-small text-muted hover:text-signal transition-colors duration-150"
+          className="text-small text-ink-soft hover:text-ember-deep transition-colors duration-150"
         >
           ← Projects
         </Link>
@@ -179,7 +180,7 @@ export default function ProjectEditor() {
           onChange={(value) => update("body_md", value)}
         />
 
-        <div className="rule-top flex flex-wrap items-center justify-between gap-4 pt-6">
+        <div className="border-t border-line flex flex-wrap items-center justify-between gap-4 pt-6">
           <Checkbox
             label="Published"
             checked={draft.published}
@@ -196,7 +197,7 @@ export default function ProjectEditor() {
           </Field>
         </div>
 
-        <div className="rule-top flex items-center gap-4 pt-6">
+        <div className="border-t border-line flex items-center gap-4 pt-6">
           <Button
             variant="danger"
             onClick={async () => {
@@ -213,7 +214,7 @@ export default function ProjectEditor() {
               href={`/work/${draft.slug}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-small text-muted hover:text-signal transition-colors duration-150"
+              className="text-small text-ink-soft hover:text-ember-deep transition-colors duration-150"
             >
               View on site ↗
             </a>

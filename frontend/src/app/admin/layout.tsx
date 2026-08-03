@@ -11,6 +11,7 @@ import type { AdminUser } from "@/lib/types";
 const NAV = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/projects", label: "Projects" },
+  { href: "/admin/services", label: "Services" },
   { href: "/admin/experience", label: "Experience" },
   { href: "/admin/posts", label: "Writing" },
   { href: "/admin/media", label: "Media" },
@@ -48,8 +49,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (state === "checking") {
     return (
-      <div className="page-shell py-24">
-        <p className="text-small text-muted">Checking your session…</p>
+      <div className="shell py-24">
+        <p className="text-small text-ink-soft">Checking your session…</p>
       </div>
     );
   }
@@ -61,8 +62,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="page-shell py-10">
-      <header className="rule-bottom flex flex-wrap items-baseline justify-between gap-4 pb-4">
+    <div className="shell py-10">
+      <header className="border-b border-line flex flex-wrap items-baseline justify-between gap-4 pb-4">
         <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2">
           {NAV.map((item) => {
             const isCurrent =
@@ -75,8 +76,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 key={item.href}
                 href={item.href}
                 aria-current={isCurrent ? "page" : undefined}
-                className={`text-small transition-colors duration-150 hover:text-signal ${
-                  isCurrent ? "text-signal" : "text-muted"
+                className={`text-small transition-colors duration-150 hover:text-ember-deep ${
+                  isCurrent ? "text-ember-deep" : "text-ink-soft"
                 }`}
               >
                 {item.label}
@@ -85,8 +86,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </div>
 
-        <div className="flex items-baseline gap-4 text-small text-muted">
-          <Link href="/" className="hover:text-signal transition-colors duration-150">
+        <div className="flex items-baseline gap-4 text-small text-ink-soft">
+          <Link href="/" className="hover:text-ember-deep transition-colors duration-150">
             View site ↗
           </Link>
           <span aria-hidden="true">·</span>
@@ -94,7 +95,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <button
             type="button"
             onClick={signOut}
-            className="hover:text-signal transition-colors duration-150"
+            className="hover:text-ember-deep transition-colors duration-150"
           >
             Sign out
           </button>

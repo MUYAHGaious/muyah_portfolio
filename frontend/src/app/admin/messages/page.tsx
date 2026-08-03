@@ -17,17 +17,17 @@ export default function MessagesPage() {
       <div className="flex items-baseline justify-between">
         <h1 className="text-h3 font-semibold">Messages</h1>
         {data && (
-          <p className="text-small text-muted">
+          <p className="text-small text-ink-soft">
             {data.unread} unread of {data.total}
           </p>
         )}
       </div>
 
-      {error && <p className="mt-4 text-small text-signal">{error}</p>}
-      {loading && !data && <p className="mt-4 text-small text-muted">Loading…</p>}
+      {error && <p className="mt-4 text-small text-ember-deep">{error}</p>}
+      {loading && !data && <p className="mt-4 text-small text-ink-soft">Loading…</p>}
 
       {data?.items.length === 0 && (
-        <p className="mt-8 text-small text-muted">
+        <p className="mt-8 text-small text-ink-soft">
           No messages yet. Submissions from the contact form land here.
         </p>
       )}
@@ -62,23 +62,23 @@ function MessageRow({
   }
 
   return (
-    <article className={`border ${message.read_at ? "border-rule" : "border-signal"}`}>
+    <article className={`border ${message.read_at ? "border-line" : "border-ember"}`}>
       <button
         type="button"
         onClick={toggle}
         aria-expanded={open}
-        className="flex w-full flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-4 py-3 text-left transition-colors duration-150 hover:text-signal"
+        className="flex w-full flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-4 py-3 text-left transition-colors duration-150 hover:text-ember-deep"
       >
         <span className="text-small">
-          {message.name} <span className="text-muted">· {message.email}</span>
+          {message.name} <span className="text-ink-soft">· {message.email}</span>
         </span>
-        <span className="text-micro uppercase tracking-[0.08em] text-muted">
+        <span className="text-micro uppercase tracking-[0.08em] text-ink-soft">
           {fullDate(message.created_at)} {open ? "−" : "+"}
         </span>
       </button>
 
       {open && (
-        <div className="border-t border-rule px-4 py-4">
+        <div className="border-t border-line px-4 py-4">
           {message.subject && <p className="text-small font-semibold">{message.subject}</p>}
           <p className="mt-2 whitespace-pre-wrap text-small">{message.body}</p>
 
@@ -87,7 +87,7 @@ function MessageRow({
               href={`mailto:${message.email}?subject=${encodeURIComponent(
                 message.subject ? `Re: ${message.subject}` : "Re: your message",
               )}`}
-              className="border border-ink bg-ink px-4 py-2 text-small text-paper transition-opacity duration-150 hover:opacity-85"
+              className="border border-ink bg-ink px-4 py-2 text-small text-surface transition-opacity duration-150 hover:opacity-85"
             >
               Reply by email
             </a>

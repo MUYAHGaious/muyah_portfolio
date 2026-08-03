@@ -47,7 +47,7 @@ export function MediaPicker({
 
   return (
     <div>
-      <span className="label-micro block mb-1.5">{label}</span>
+      <span className="eyebrow block mb-1.5">{label}</span>
 
       <div className="flex items-start gap-4">
         {selected ? (
@@ -57,11 +57,11 @@ export function MediaPicker({
             <img
               src={selected.url}
               alt=""
-              className="h-20 w-20 object-cover border border-rule"
+              className="h-20 w-20 object-cover border border-line"
             />
           )
         ) : (
-          <div className="flex h-20 w-20 items-center justify-center border border-dashed border-field text-micro text-muted">
+          <div className="flex h-20 w-20 items-center justify-center border border-dashed border-field text-micro text-ink-soft">
             None
           </div>
         )}
@@ -79,9 +79,9 @@ export function MediaPicker({
       </div>
 
       {open && (
-        <div className="mt-4 border border-rule p-4">
+        <div className="mt-4 border border-line p-4">
           <label className="text-small">
-            <span className="label-micro block mb-1.5">Upload new</span>
+            <span className="eyebrow block mb-1.5">Upload new</span>
             <input
               type="file"
               accept={accept}
@@ -91,16 +91,16 @@ export function MediaPicker({
             />
           </label>
 
-          {uploading && <p className="mt-2 text-small text-muted">Uploading…</p>}
+          {uploading && <p className="mt-2 text-small text-ink-soft">Uploading…</p>}
           {error && (
-            <p role="alert" className="mt-2 text-small text-signal">
+            <p role="alert" className="mt-2 text-small text-ember-deep">
               {error}
             </p>
           )}
 
           {media && media.length > 0 && (
             <>
-              <p className="label-micro mt-5 mb-2">Library</p>
+              <p className="eyebrow mt-5 mb-2">Library</p>
               <ul className="grid grid-cols-4 gap-2 sm:grid-cols-6">
                 {media.map((item) => (
                   <li key={item.id}>
@@ -110,8 +110,8 @@ export function MediaPicker({
                         onChange(item.id);
                         setOpen(false);
                       }}
-                      className={`block w-full border transition-colors duration-150 hover:border-signal ${
-                        item.id === value ? "border-signal" : "border-rule"
+                      className={`block w-full border transition-colors duration-150 hover:border-ember ${
+                        item.id === value ? "border-ember" : "border-line"
                       }`}
                       title={item.original_name}
                     >

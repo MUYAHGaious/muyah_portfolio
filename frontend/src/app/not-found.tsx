@@ -1,28 +1,43 @@
-import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 
 export default function NotFound() {
   return (
-    <section className="page-shell pt-24 pb-32">
-      <p className="label-micro">404</p>
-      <h1 className="mt-3 text-h2 font-semibold">This page doesn&apos;t exist.</h1>
-      <p className="mt-4 text-muted max-w-[42ch]">
-        The link may be out of date, or the page may have been renamed.
-      </p>
+    <section className="shell pt-3">
+      <div className="panel relative overflow-hidden px-6 py-20 text-center sm:px-12 sm:py-28">
+        <div
+          aria-hidden="true"
+          className="glow left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2"
+        />
 
-      <nav aria-label="Suggested pages" className="rule-top mt-10 pt-6 flex gap-6 text-small">
-        <Link href="/" className="text-muted hover:text-signal transition-colors duration-150">
-          Home
-        </Link>
-        <Link href="/work" className="text-muted hover:text-signal transition-colors duration-150">
-          Work
-        </Link>
-        <Link
-          href="/contact"
-          className="text-muted hover:text-signal transition-colors duration-150"
-        >
-          Contact
-        </Link>
-      </nav>
+        <div className="relative mx-auto max-w-lg">
+          <p className="eyebrow animate-rise">404</p>
+          <h1
+            className="mt-3 text-h1 font-bold tracking-tight text-ink animate-rise"
+            style={{ animationDelay: "100ms", fontSize: "clamp(3rem, 12vw, 7rem)" }}
+          >
+            Lost
+          </h1>
+          <p
+            className="mx-auto mt-4 max-w-[34ch] text-lead text-ink-soft animate-rise"
+            style={{ animationDelay: "180ms" }}
+          >
+            This page doesn&apos;t exist. The link may be out of date, or the page may have
+            been renamed.
+          </p>
+
+          <div
+            className="mt-8 flex flex-wrap justify-center gap-3 animate-rise"
+            style={{ animationDelay: "260ms" }}
+          >
+            <Button href="/" variant="ember">
+              Back home
+            </Button>
+            <Button href="/work" variant="ghost">
+              See the work
+            </Button>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

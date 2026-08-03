@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 
 import { Markdown } from "@/components/Markdown";
-import { getExperience, getSettings } from "@/lib/api";
+import { PageHero } from "@/components/PageHero";
+import { SectionHeading } from "@/components/SectionHeading";
+import { Parallax } from "@/components/motion/Parallax";
+import { Reveal } from "@/components/motion/Reveal";
+import { Button } from "@/components/ui/Button";
+import { getExperience, getProjects, getSettings } from "@/lib/api";
 import { dateRange } from "@/lib/format";
 
 export const metadata: Metadata = {
@@ -10,68 +15,118 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const [settings, experience] = await Promise.all([getSettings(), getExperience()]);
+  const [settings, experience, projects] = await Promise.all([
+    getSettings(),
+    getExperience(),
+    getProjects(),
+  ]);
+
+  // The stack is derived from what the projects actually use, so it can never
+  // drift from reality or claim a technology that appears nowhere.
+  const stack = [...new Set(projects.flatMap((project) => project.tech))].slice(0, 18);
 
   return (
-    <section className="page-shell pt-16 pb-20 sm:pt-24">
-      <div className="grid-field">
-        <h1 className="col-span-12 sm:col-span-3 text-h2 font-semibold">About</h1>
-        <div className="col-span-12 sm:col-span-8 sm:col-start-5 mt-6 sm:mt-0">
-          <Markdown>{settings.bio_md}</Markdown>
+    <>
+      <PageHero eyebrow="About" title="A bit of background." lead={settings.tagline || undefined}>
+        {settings.resume_media && (
+          <Button href={settings.resume_media.url} variant="ghost" external>
+            Download CV
+          </Button>
+        )}
+      </PageHero>
 
-          {settings.resume_media && (
-            <p className="mt-8">
-              <a
-                href={settings.resume_media.url}
-                download
-                className="text-small underline underline-offset-4 hover:text-signal transition-colors duration-150"
-              >
-                Download CV (PDF)
-              </a>
-            </p>
+      <section className="shell pt-12 sm:pt-16">
+        <div className="grid gap-10 lg:grid-cols-12">
+          <Reveal className="lg:col-span-7">
+            <Markdown>{settings.bio_md}</Markdown>
+          </Reveal>
+
+          {settings.avatar && (
+            <div className="lg:col-span-5">
+              <Parallax speed={0.06}>
+                <img
+                  src={settings.avatar.url}
+                  srcSet={settings.avatar.srcset}
+                  sizes="(min-width: 64rem) 28rem, 90vw"
+                  alt={settings.name ? `Portrait of ${settings.name}` : "Portrait"}
+                  className="w-full rounded-[var(--r-lg)] object-cover shadow-card"
+                />
+              </Parallax>
+            </div>
           )}
         </div>
-      </div>
+      </section>
+
+      {stack.length > 0 && (
+        <section className="shell pt-20 sm:pt-28">
+          <SectionHeading
+            eyebrow="Toolkit"
+            title="What I build with."
+            lead="Pulled from the projects on this site, so it stays honest."
+          />
+          <Reveal>
+            <ul className="flex flex-wrap gap-2.5">
+              {stack.map((tech) => (
+                <li
+                  key={tech}
+                  className="card px-4 py-2.5 text-small font-medium text-ink transition-transform duration-200 hover:-translate-y-0.5"
+                >
+                  {tech}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        </section>
+      )}
 
       {experience.length > 0 && (
-        <div className="mt-24">
-          <h2 className="label-micro mb-6">Experience</h2>
+        <section className="shell pt-20 sm:pt-28">
+          <SectionHeading eyebrow="Experience" title="Where I've worked." />
 
-          <ol className="rule-top">
-            {experience.map((entry) => (
-              <li key={entry.id} className="rule-bottom grid-field py-8">
-                <p className="col-span-12 sm:col-span-3 text-small text-muted">
-                  {dateRange(entry.start_date, entry.end_date)}
-                </p>
+          <ol className="relative grid gap-4">
+            {experience.map((entry, index) => (
+              <Reveal as="li" key={entry.id} delay={index * 80}>
+                <article className="card p-6 sm:p-8">
+                  <div className="grid gap-4 sm:grid-cols-12 sm:gap-6">
+                    <p className="text-small font-medium text-ember-deep sm:col-span-4">
+                      {dateRange(entry.start_date, entry.end_date)}
+                    </p>
 
-                <div className="col-span-12 sm:col-span-8 sm:col-start-5 mt-2 sm:mt-0">
-                  <h3 className="text-h3 font-semibold">{entry.role}</h3>
-                  <p className="mt-1 text-small text-muted">
-                    {entry.company}
-                    {entry.location && ` · ${entry.location}`}
-                  </p>
+                    <div className="sm:col-span-8">
+                      <h3 className="text-h4 font-bold tracking-tight text-ink">{entry.role}</h3>
+                      <p className="mt-1 text-small text-ink-soft">
+                        {entry.company}
+                        {entry.location && ` · ${entry.location}`}
+                      </p>
 
-                  {entry.summary && <p className="mt-3 max-w-[46ch]">{entry.summary}</p>}
+                      {entry.summary && (
+                        <p className="mt-3 text-small text-ink-soft">{entry.summary}</p>
+                      )}
 
-                  {entry.highlights.length > 0 && (
-                    <ul className="mt-4 space-y-2">
-                      {entry.highlights.map((highlight, index) => (
-                        <li key={index} className="relative pl-6 text-small">
-                          <span
-                            aria-hidden="true"
-                            className="absolute left-0 top-[0.7em] block h-px w-3 bg-rule"
-                          />
-                          {highlight}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </li>
+                      {entry.highlights.length > 0 && (
+                        <ul className="mt-4 space-y-2">
+                          {entry.highlights.map((highlight, position) => (
+                            <li
+                              key={position}
+                              className="flex items-start gap-2.5 text-small text-ink-soft"
+                            >
+                              <span
+                                aria-hidden="true"
+                                className="mt-[0.55em] h-1.5 w-1.5 shrink-0 rounded-full bg-ember"
+                              />
+                              {highlight}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              </Reveal>
             ))}
           </ol>
-        </div>
+        </section>
       )}
-    </section>
+    </>
   );
 }

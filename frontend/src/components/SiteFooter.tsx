@@ -1,51 +1,80 @@
+import Link from "next/link";
+
+import { Button } from "@/components/ui/Button";
 import type { SiteSettings } from "@/lib/types";
+
+const LINKS = [
+  { href: "/work", label: "Work" },
+  { href: "/services", label: "Services" },
+  { href: "/writing", label: "Writing" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+];
 
 export function SiteFooter({ settings }: { settings: SiteSettings }) {
   const year = new Date().getFullYear();
 
   return (
-    // No top margin: every page section already ends with its own bottom
-    // padding, and stacking the two left a conspicuous void above the rule.
-    <footer className="rule-top">
-      <div className="page-shell grid-field py-10">
-        <div className="col-span-12 sm:col-span-4">
-          <p className="label-micro">Contact</p>
-          {settings.email ? (
-            <a
-              href={`mailto:${settings.email}`}
-              className="mt-2 block text-small hover:text-signal transition-colors duration-150"
-            >
-              {settings.email}
-            </a>
-          ) : (
-            <p className="mt-2 text-small text-muted">Add an address in settings</p>
-          )}
-          {settings.location && (
-            <p className="mt-1 text-small text-muted">{settings.location}</p>
-          )}
-        </div>
+    <footer className="shell pb-6 pt-16 sm:pt-24">
+      <div className="panel relative overflow-hidden px-6 py-12 sm:px-12 sm:py-16">
+        <div
+          aria-hidden="true"
+          className="glow -right-24 -top-24 h-72 w-72 sm:h-96 sm:w-96"
+        />
 
-        <div className="col-span-12 sm:col-span-4 mt-8 sm:mt-0">
-          <p className="label-micro">Elsewhere</p>
-          <ul className="mt-2 space-y-1">
-            {settings.socials.map((link) => (
-              <li key={`${link.label}-${link.url}`}>
-                <a
-                  href={link.url}
-                  className="text-small hover:text-signal transition-colors duration-150"
-                  rel="me noopener noreferrer"
-                  target="_blank"
+        <div className="relative">
+          <div className="flex flex-col gap-8 border-b border-line pb-10 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="eyebrow">Got something in mind?</p>
+              <p className="mt-3 max-w-[16ch] text-h2 font-bold tracking-tight text-ink">
+                Let&apos;s build it together.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Button href="/contact" variant="ember">
+                Start a conversation
+              </Button>
+              {settings.email && (
+                <Button href={`mailto:${settings.email}`} variant="ghost" external>
+                  {settings.email}
+                </Button>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-2">
+              {LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-small text-ink-soft transition-colors hover:text-ember-deep"
                 >
                   {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+                </Link>
+              ))}
+            </nav>
 
-        <div className="col-span-12 sm:col-span-4 mt-8 sm:mt-0 sm:text-right">
-          <p className="label-micro">© {year}</p>
-          <p className="mt-2 text-small text-muted">{settings.name}</p>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              {settings.socials.map((social) => (
+                <a
+                  key={`${social.label}-${social.url}`}
+                  href={social.url}
+                  target="_blank"
+                  rel="me noopener noreferrer"
+                  className="text-small text-ink-soft transition-colors hover:text-ember-deep"
+                >
+                  {social.label}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <p className="mt-8 text-micro text-ink-faint">
+            © {year} {settings.name}
+            {settings.location && ` · ${settings.location}`}
+          </p>
         </div>
       </div>
     </footer>

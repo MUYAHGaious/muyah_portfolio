@@ -56,18 +56,18 @@ export default function MediaPage() {
         </label>
       </div>
 
-      <p className="mt-2 text-micro text-muted normal-case">
+      <p className="mt-2 text-micro text-ink-soft normal-case">
         Images are converted to WebP and resized automatically. PDFs are stored as-is —
         upload your CV here, then select it in Settings.
       </p>
 
-      {uploading && <p className="mt-4 text-small text-muted">Uploading…</p>}
-      {uploadError && <p className="mt-4 text-small text-signal">{uploadError}</p>}
-      {error && <p className="mt-4 text-small text-signal">{error}</p>}
-      {loading && !media && <p className="mt-4 text-small text-muted">Loading…</p>}
+      {uploading && <p className="mt-4 text-small text-ink-soft">Uploading…</p>}
+      {uploadError && <p className="mt-4 text-small text-ember-deep">{uploadError}</p>}
+      {error && <p className="mt-4 text-small text-ember-deep">{error}</p>}
+      {loading && !media && <p className="mt-4 text-small text-ink-soft">Loading…</p>}
 
       {media && media.length === 0 && (
-        <p className="mt-8 text-small text-muted">Nothing uploaded yet.</p>
+        <p className="mt-8 text-small text-ink-soft">Nothing uploaded yet.</p>
       )}
 
       {media && media.length > 0 && (
@@ -88,7 +88,7 @@ function MediaCard({ item, onChanged }: { item: Media; onChanged: () => Promise<
   return (
     <li>
       {item.mime === "application/pdf" ? (
-        <div className="flex aspect-4/3 items-center justify-center border border-rule text-small text-muted">
+        <div className="flex aspect-4/3 items-center justify-center border border-line text-small text-ink-soft">
           PDF
         </div>
       ) : (
@@ -97,14 +97,14 @@ function MediaCard({ item, onChanged }: { item: Media; onChanged: () => Promise<
           srcSet={item.srcset}
           sizes="(min-width: 64rem) 20rem, 50vw"
           alt={item.alt_text}
-          className="aspect-4/3 w-full border border-rule object-cover"
+          className="aspect-4/3 w-full border border-line object-cover"
         />
       )}
 
       <p className="mt-2 truncate text-small" title={item.original_name}>
         {item.original_name}
       </p>
-      <p className="text-micro text-muted normal-case">
+      <p className="text-micro text-ink-soft normal-case">
         {item.width > 0 && `${item.width}×${item.height} · `}
         {formatSize(item.size_bytes)}
       </p>
@@ -126,7 +126,7 @@ function MediaCard({ item, onChanged }: { item: Media; onChanged: () => Promise<
               await onChanged();
             }}
           />
-          {saved && <p className="mt-1 text-micro text-muted normal-case">Saved.</p>}
+          {saved && <p className="mt-1 text-micro text-ink-soft normal-case">Saved.</p>}
         </div>
       )}
 
@@ -135,7 +135,7 @@ function MediaCard({ item, onChanged }: { item: Media; onChanged: () => Promise<
           href={item.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-micro uppercase tracking-[0.08em] text-muted hover:text-signal transition-colors duration-150"
+          className="text-micro uppercase tracking-[0.08em] text-ink-soft hover:text-ember-deep transition-colors duration-150"
         >
           Open
         </a>
@@ -147,7 +147,7 @@ function MediaCard({ item, onChanged }: { item: Media; onChanged: () => Promise<
             await api.delete(`/admin/media/${item.id}`);
             await onChanged();
           }}
-          className="text-micro uppercase tracking-[0.08em] text-muted hover:text-signal transition-colors duration-150"
+          className="text-micro uppercase tracking-[0.08em] text-ink-soft hover:text-ember-deep transition-colors duration-150"
         >
           Delete
         </button>

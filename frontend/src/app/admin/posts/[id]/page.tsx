@@ -14,6 +14,7 @@ import {
   TextInput,
 } from "@/components/admin/fields";
 import { MarkdownEditor } from "@/components/admin/MarkdownEditor";
+import { EditorSkeleton } from "@/components/admin/EditorSkeleton";
 import { useAsync } from "@/components/admin/useAsync";
 import { api } from "@/lib/admin-api";
 import type { Post } from "@/lib/types";
@@ -61,8 +62,8 @@ export default function PostEditor() {
     }
   }
 
-  if (loading && !draft) return <p className="text-small text-muted">Loading…</p>;
-  if (error) return <p className="text-small text-signal">{error}</p>;
+  if (loading && !draft) return <EditorSkeleton />;
+  if (error) return <p className="text-small text-ember-deep">{error}</p>;
   if (!draft) return null;
 
   return (
@@ -70,7 +71,7 @@ export default function PostEditor() {
       <div className="flex items-baseline justify-between gap-4">
         <Link
           href="/admin/posts"
-          className="text-small text-muted hover:text-signal transition-colors duration-150"
+          className="text-small text-ink-soft hover:text-ember-deep transition-colors duration-150"
         >
           ← Writing
         </Link>
@@ -114,20 +115,20 @@ export default function PostEditor() {
 
         <MarkdownEditor value={draft.body_md} onChange={(value) => update("body_md", value)} />
 
-        <div className="rule-top flex flex-wrap items-center justify-between gap-4 pt-6">
+        <div className="border-t border-line flex flex-wrap items-center justify-between gap-4 pt-6">
           <Checkbox
             label="Published"
             checked={draft.published}
             onChange={(value) => update("published", value)}
           />
           {draft.published_at && (
-            <p className="text-micro text-muted normal-case">
+            <p className="text-micro text-ink-soft normal-case">
               First published {new Date(draft.published_at).toLocaleDateString("en-GB")}
             </p>
           )}
         </div>
 
-        <div className="rule-top flex items-center gap-4 pt-6">
+        <div className="border-t border-line flex items-center gap-4 pt-6">
           <Button
             variant="danger"
             onClick={async () => {
@@ -144,7 +145,7 @@ export default function PostEditor() {
               href={`/writing/${draft.slug}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-small text-muted hover:text-signal transition-colors duration-150"
+              className="text-small text-ink-soft hover:text-ember-deep transition-colors duration-150"
             >
               View on site ↗
             </a>

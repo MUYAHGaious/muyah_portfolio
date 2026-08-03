@@ -11,7 +11,7 @@ import { useState } from "react";
  */
 
 const INPUT =
-  "w-full bg-transparent border border-field px-3 py-2 text-small outline-none transition-colors duration-150 focus:border-signal";
+  "w-full bg-transparent border border-field px-3 py-2 text-small outline-none transition-colors duration-150 focus:border-ember";
 
 export function Field({
   label,
@@ -24,9 +24,9 @@ export function Field({
 }) {
   return (
     <label className="block">
-      <span className="label-micro block mb-1.5">{label}</span>
+      <span className="eyebrow block mb-1.5">{label}</span>
       {children}
-      {hint && <span className="mt-1 block text-micro text-muted normal-case">{hint}</span>}
+      {hint && <span className="mt-1 block text-micro text-ink-soft normal-case">{hint}</span>}
     </label>
   );
 }
@@ -100,9 +100,9 @@ export function Button({
   // Button outlines use --field, not --rule: a control's boundary has to meet
   // 3:1 non-text contrast, which the hairline divider colour does not.
   const styles = {
-    primary: "border-ink bg-ink text-paper hover:opacity-85",
+    primary: "border-ink bg-ink text-surface hover:opacity-85",
     secondary: "border-field hover:border-ink",
-    danger: "border-field text-signal hover:border-signal",
+    danger: "border-field text-ember-deep hover:border-ember",
   }[variant];
 
   return (
@@ -117,7 +117,7 @@ export function Notice({ kind, children }: { kind: "error" | "success"; children
   return (
     <p
       role={kind === "error" ? "alert" : "status"}
-      className={`text-small ${kind === "error" ? "text-signal" : "text-muted"}`}
+      className={`text-small ${kind === "error" ? "text-ember-deep" : "text-ink-soft"}`}
     >
       {children}
     </p>

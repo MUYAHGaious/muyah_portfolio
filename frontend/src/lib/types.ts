@@ -73,12 +73,36 @@ export interface SocialLink {
 
 export interface SiteSettings {
   name: string;
+  greeting: string;
   tagline: string;
   bio_md: string;
   location: string;
   email: string;
   socials: SocialLink[];
   resume_media: Media | null;
+  avatar: Media | null;
+}
+
+export interface Service {
+  id: number;
+  title: string;
+  blurb: string;
+  body_md: string;
+  points: string[];
+  image: Media | null;
+  featured: boolean;
+  sort_order: number;
+  published: boolean;
+}
+
+export interface Testimonial {
+  id: number;
+  quote: string;
+  author: string;
+  role: string;
+  avatar: Media | null;
+  sort_order: number;
+  published: boolean;
 }
 
 export interface ContactMessage {

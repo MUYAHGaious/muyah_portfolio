@@ -10,6 +10,7 @@ from app.models.media import Media
 from app.models.message import Message
 from app.models.post import Post
 from app.models.project import Project
+from app.models.service import Service, Testimonial
 from app.models.settings import SINGLETON_ID, SiteSettings
 from app.models.user import AdminUser
 
@@ -22,5 +23,7 @@ __all__ = [
     "PageView",
     "Post",
     "Project",
+    "Service",
     "SiteSettings",
+    "Testimonial",
 ]

@@ -1,142 +1,146 @@
 import Link from "next/link";
 
 import { Markdown } from "@/components/Markdown";
-import { WorkIndex } from "@/components/WorkIndex";
-import { getPosts, getProjects, getSettings } from "@/lib/api";
+import { ProjectGrid } from "@/components/ProjectGrid";
+import { SectionHeading } from "@/components/SectionHeading";
+import { Hero } from "@/components/home/Hero";
+import { ServicesSection } from "@/components/home/ServicesSection";
+import { Testimonials } from "@/components/home/Testimonials";
+import { Parallax } from "@/components/motion/Parallax";
+import { Reveal } from "@/components/motion/Reveal";
+import { getPosts, getProjects, getServices, getSettings, getTestimonials } from "@/lib/api";
 import { fullDate } from "@/lib/format";
 
-const FEATURED_COUNT = 4;
+const FEATURED = 6;
 
 export default async function HomePage() {
-  const [settings, projects, posts] = await Promise.all([
+  const [settings, projects, posts, services, testimonials] = await Promise.all([
     getSettings(),
     getProjects(),
     getPosts(1),
+    getServices(),
+    getTestimonials(),
   ]);
 
-  const featured = projects.slice(0, FEATURED_COUNT);
   const recent = posts.items.slice(0, 3);
 
   return (
     <>
-      {/* Hero. The name at poster scale is the thesis: this is a person, not a
-          product. The colophon rule beneath it carries the only facts that
-          matter above the fold. */}
-      <section className="page-shell pt-16 pb-20 sm:pt-24 sm:pb-28">
-        <div className="animate-rise">
-          <h1 className="text-h1 font-semibold max-w-[14ch]">
-            {settings.name || "Your name"}
-          </h1>
+      <Hero settings={settings} services={services} projectCount={projects.length} />
 
-          {settings.tagline && (
-            <p className="mt-6 text-lead max-w-[34ch] text-muted">{settings.tagline}</p>
-          )}
-        </div>
+      {projects.length > 0 && (
+        <section className="shell pt-20 sm:pt-28">
+          <SectionHeading
+            eyebrow="Selected work"
+            title="Things I've designed and built."
+            link={{ href: "/work", label: "All work" }}
+          />
+          <ProjectGrid projects={projects.slice(0, FEATURED)} />
+        </section>
+      )}
 
-        {/* A colophon rule, not a stats row. Counts are only shown when they are
-            non-zero — "Writing: 0" is not a fact worth leading with. */}
-        <dl className="rule-top mt-12 grid-field py-4 text-small">
-          {settings.location && (
-            <div className="col-span-6 sm:col-span-3">
-              <dt className="label-micro">Based in</dt>
-              <dd className="mt-1">{settings.location}</dd>
-            </div>
-          )}
-          {projects.length > 0 && (
-            <div className="col-span-6 sm:col-span-3">
-              <dt className="label-micro">Selected work</dt>
-              <dd className="mt-1">
-                {projects.length} {projects.length === 1 ? "project" : "projects"}
-              </dd>
-            </div>
-          )}
-          {posts.total > 0 && (
-            <div className="col-span-6 sm:col-span-3 mt-4 sm:mt-0">
-              <dt className="label-micro">Writing</dt>
-              <dd className="mt-1">
-                {posts.total} {posts.total === 1 ? "post" : "posts"}
-              </dd>
-            </div>
-          )}
-          <div className="col-span-6 sm:col-span-3 mt-4 sm:mt-0">
-            <dt className="label-micro">Contact</dt>
-            <dd className="mt-1">
-              <Link href="/contact" className="hover:text-signal transition-colors duration-150">
-                Get in touch
-              </Link>
-            </dd>
-          </div>
-        </dl>
-      </section>
-
-      <section className="page-shell pb-20 sm:pb-28">
-        <div className="grid-field mb-6">
-          <h2 className="col-span-6 label-micro">Selected work</h2>
-          <p className="col-span-6 text-right">
-            <Link
-              href="/work"
-              className="text-small text-muted hover:text-signal transition-colors duration-150"
-            >
-              All work →
-            </Link>
-          </p>
-        </div>
-
-        <WorkIndex projects={featured} />
-      </section>
+      {services.length > 0 && (
+        <section className="shell pt-20 sm:pt-28">
+          <SectionHeading
+            eyebrow="Services"
+            title="How I can help."
+            lead="What I take on, and what working together looks like."
+            link={{ href: "/services", label: "Details" }}
+          />
+          <ServicesSection services={services.slice(0, 3)} />
+        </section>
+      )}
 
       {settings.bio_md && (
-        <section className="page-shell pb-20 sm:pb-28">
-          <div className="grid-field">
-            <h2 className="col-span-12 sm:col-span-3 label-micro">About</h2>
-            <div className="col-span-12 sm:col-span-8 sm:col-start-5 mt-4 sm:mt-0">
-              <Markdown>{settings.bio_md}</Markdown>
-              <p className="mt-6">
+        <section className="shell pt-20 sm:pt-28">
+          <div className="panel relative overflow-hidden px-6 py-12 sm:px-12 sm:py-16">
+            <div aria-hidden="true" className="glow -left-20 top-1/2 h-72 w-72 -translate-y-1/2" />
+
+            <div className="relative grid gap-10 lg:grid-cols-12 lg:items-center">
+              <Reveal className="lg:col-span-5">
+                <p className="eyebrow">About me</p>
+                <h2 className="mt-2 text-h2 font-bold tracking-tight text-ink">
+                  A bit of background.
+                </h2>
                 <Link
                   href="/about"
-                  className="text-small text-muted hover:text-signal transition-colors duration-150"
+                  className="group mt-6 inline-flex items-center gap-1.5 text-small font-semibold text-ember-deep"
                 >
-                  More about me →
+                  Read more
+                  <span
+                    aria-hidden="true"
+                    className="transition-transform duration-200 group-hover:translate-x-1"
+                  >
+                    →
+                  </span>
                 </Link>
-              </p>
+              </Reveal>
+
+              <Reveal className="lg:col-span-7" delay={120}>
+                <Markdown>{settings.bio_md}</Markdown>
+              </Reveal>
             </div>
           </div>
+        </section>
+      )}
+
+      {testimonials.length > 0 && (
+        <section className="shell pt-20 sm:pt-28">
+          <SectionHeading eyebrow="Testimonials" title="What people say." />
+          <Testimonials testimonials={testimonials.slice(0, 3)} />
         </section>
       )}
 
       {recent.length > 0 && (
-        <section className="page-shell pb-20 sm:pb-28">
-          <div className="grid-field mb-6">
-            <h2 className="col-span-6 label-micro">Recent writing</h2>
-            <p className="col-span-6 text-right">
-              <Link
-                href="/writing"
-                className="text-small text-muted hover:text-signal transition-colors duration-150"
-              >
-                All writing →
-              </Link>
-            </p>
-          </div>
+        <section className="shell pt-20 sm:pt-28">
+          <SectionHeading
+            eyebrow="Writing"
+            title="Notes and longer pieces."
+            link={{ href: "/writing", label: "All writing" }}
+          />
 
-          <ul className="rule-top">
-            {recent.map((post) => (
-              <li key={post.id} className="rule-bottom">
+          <ul className="grid gap-4">
+            {recent.map((post, index) => (
+              <Reveal as="li" key={post.id} delay={index * 90}>
                 <Link
                   href={`/writing/${post.slug}`}
-                  className="group grid grid-cols-12 items-baseline gap-x-4 py-5 transition-colors duration-150 hover:text-signal"
+                  className="card card-lift group flex flex-col gap-2 p-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
                 >
-                  <span className="col-span-3 sm:col-span-2 text-small text-muted group-hover:text-signal transition-colors duration-150">
-                    {post.published_at ? fullDate(post.published_at) : "Draft"}
+                  <span className="min-w-0">
+                    <span className="block text-h4 font-bold tracking-tight text-ink">
+                      {post.title}
+                    </span>
+                    {post.excerpt && (
+                      <span className="mt-1.5 line-clamp-2 block text-small text-ink-soft">
+                        {post.excerpt}
+                      </span>
+                    )}
                   </span>
-                  <span className="col-span-9 sm:col-span-10 text-h3 font-semibold">
-                    {post.title}
+
+                  <span className="flex shrink-0 items-center gap-4">
+                    <span className="text-micro normal-case tracking-normal text-ink-faint">
+                      {post.published_at ? fullDate(post.published_at) : "Draft"}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="text-ember-deep transition-transform duration-200 group-hover:translate-x-1"
+                    >
+                      →
+                    </span>
                   </span>
                 </Link>
-              </li>
+              </Reveal>
             ))}
           </ul>
         </section>
       )}
+
+      {/* A slow-moving band of warm light: the parallax layer, purely decorative. */}
+      <div aria-hidden="true" className="relative h-24 overflow-hidden sm:h-32">
+        <Parallax speed={0.22} className="absolute inset-x-0 top-0 flex justify-center">
+          <div className="glow h-56 w-[36rem] opacity-40" />
+        </Parallax>
+      </div>
     </>
   );
 }
