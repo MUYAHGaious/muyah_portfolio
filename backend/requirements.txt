@@ -1,0 +1,16 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+sqlalchemy==2.0.36
+# SQLAlchemy's async layer runs sync DBAPI calls in a greenlet. It is only an
+# implicit dependency on some platforms, so pin it explicitly.
+greenlet==3.1.1
+alembic==1.14.0
+asyncpg==0.30.0
+pydantic==2.10.4
+pydantic-settings==2.7.0
+python-multipart==0.0.20
+bcrypt==4.2.1
+pyjwt==2.10.1
+aiosmtplib==3.0.2
+pillow==11.0.0
+email-validator==2.2.0
