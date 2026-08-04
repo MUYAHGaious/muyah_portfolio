@@ -6,8 +6,10 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { Parallax } from "@/components/motion/Parallax";
 import { Reveal } from "@/components/motion/Reveal";
 import { Button } from "@/components/ui/Button";
+import { IconCloud } from "@/components/ui/interactive-icon-cloud";
 import { getExperience, getProjects, getSettings } from "@/lib/api";
 import { dateRange } from "@/lib/format";
+import { slugsForTech } from "@/lib/tech-icons";
 
 export const metadata: Metadata = {
   title: "About",
@@ -23,7 +25,8 @@ export default async function AboutPage() {
 
   // The stack is derived from what the projects actually use, so it can never
   // drift from reality or claim a technology that appears nowhere.
-  const stack = [...new Set(projects.flatMap((project) => project.tech))].slice(0, 18);
+  const stack = [...new Set(projects.flatMap((project) => project.tech))].slice(0, 24);
+  const iconSlugs = slugsForTech(projects.map((project) => project.tech));
 
   return (
     <>
@@ -64,18 +67,33 @@ export default async function AboutPage() {
             title="What I build with."
             lead="Pulled from the projects on this site, so it stays honest."
           />
-          <Reveal>
-            <ul className="flex flex-wrap gap-2.5">
-              {stack.map((tech) => (
-                <li
-                  key={tech}
-                  className="card px-4 py-2.5 text-small font-medium text-ink transition-transform duration-200 hover:-translate-y-0.5"
-                >
-                  {tech}
-                </li>
-              ))}
-            </ul>
-          </Reveal>
+
+          <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
+            <Reveal className="lg:col-span-5">
+              <div className="card relative overflow-hidden p-2">
+                <div aria-hidden="true" className="glow -right-20 -top-20 h-56 w-56 opacity-40" />
+                <div className="relative">
+                  <IconCloud iconSlugs={iconSlugs} />
+                </div>
+              </div>
+            </Reveal>
+
+            {/* The names stay, in text. The cloud is a canvas: it is not
+                selectable, not searchable, and not readable by a screen
+                reader, so it cannot be the only place the stack is listed. */}
+            <Reveal className="lg:col-span-7" delay={120}>
+              <ul className="flex flex-wrap gap-2.5">
+                {stack.map((tech) => (
+                  <li
+                    key={tech}
+                    className="card px-4 py-2.5 text-small font-medium text-ink transition-transform duration-200 hover:-translate-y-0.5 motion-reduce:hover:translate-y-0"
+                  >
+                    {tech}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+          </div>
         </section>
       )}
 
