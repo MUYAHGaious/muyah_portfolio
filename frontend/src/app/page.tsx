@@ -4,10 +4,10 @@ import { Markdown } from "@/components/Markdown";
 import { ProjectGrid } from "@/components/ProjectGrid";
 import { SectionHeading } from "@/components/SectionHeading";
 import { BentoGrid } from "@/components/home/BentoGrid";
+import { FeaturedSlider } from "@/components/home/FeaturedSlider";
 import { Hero } from "@/components/home/Hero";
 import { ServicesSection } from "@/components/home/ServicesSection";
 import { Testimonials } from "@/components/home/Testimonials";
-import { WorkShowcase } from "@/components/home/WorkShowcase";
 import { Parallax } from "@/components/motion/Parallax";
 import { Reveal } from "@/components/motion/Reveal";
 import { getPosts, getProjects, getServices, getSettings, getTestimonials } from "@/lib/api";
@@ -35,15 +35,17 @@ export default async function HomePage() {
           <SectionHeading
             eyebrow="Selected work"
             title="Things I've designed and built."
-            lead="Hover a panel to open it."
+            lead="Pick one below, or let it run."
             link={{ href: "/work", label: "All work" }}
           />
-          {/* The expanding showcase highlights a handful; the full index at
-              /work uses the grid, which scans better at length. */}
-          <WorkShowcase projects={projects.slice(0, 4)} />
+          {/* One featured treatment, not three. The slider carries the top four
+              with room for imagery; the rest fall through to the grid, and the
+              full index at /work uses the grid alone, which scans better at
+              length. */}
+          <FeaturedSlider projects={projects.slice(0, 4)} />
 
           {projects.length > 4 && (
-            <div className="mt-5">
+            <div className="mt-14">
               <ProjectGrid projects={projects.slice(4, FEATURED)} />
             </div>
           )}
