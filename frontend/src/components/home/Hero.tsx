@@ -1,4 +1,6 @@
 import { Button } from "@/components/ui/Button";
+import { LiquidButton } from "@/components/ui/LiquidButton";
+import { GradientBackground } from "@/components/ui/vermilion-rings";
 import { shortName } from "@/lib/format";
 import type { Service, SiteSettings } from "@/lib/types";
 
@@ -32,6 +34,20 @@ export function Hero({
   return (
     <section className="shell pt-3">
       <div className="panel relative overflow-hidden px-5 py-12 sm:px-10 sm:py-16 lg:px-14 lg:py-20">
+        {/* Vermilion rings behind the panel. Held at low opacity and masked to
+            fade outward — at full strength the concentric bands read as a
+            bullseye and fight the content sitting on top of them. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -inset-24 opacity-[0.13] blur-2xl dark:opacity-[0.16]"
+          style={{
+            maskImage: "radial-gradient(circle at 60% 40%, black 0%, transparent 72%)",
+            WebkitMaskImage: "radial-gradient(circle at 60% 40%, black 0%, transparent 72%)",
+          }}
+        >
+          <GradientBackground className="h-full w-full" />
+        </div>
+
         {/* Warm light bleeding through the panel — the reference's signature. */}
         <div aria-hidden="true" className="glow left-1/2 top-0 h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/3" />
         <div aria-hidden="true" className="glow -bottom-32 -left-24 h-72 w-72 opacity-40" />
@@ -65,11 +81,21 @@ export function Hero({
               </p>
             )}
 
+            {/* The primary call to action, deliberately oversized — it is the
+                one thing this page most wants a visitor to do. */}
+            <div className="mt-8 animate-rise" style={{ animationDelay: "360ms" }}>
+              <LiquidButton
+                label="Contact me"
+                href="/contact"
+                className="w-full sm:w-auto min-h-[4.5rem] rounded-full bg-ember px-12 text-[1.375rem] font-bold text-white shadow-float transition-transform duration-200 hover:-translate-y-1 sm:min-h-[5rem] sm:px-16 sm:text-[1.75rem]"
+              />
+            </div>
+
             <div
-              className="mt-8 flex flex-wrap items-center gap-3 animate-rise"
-              style={{ animationDelay: "360ms" }}
+              className="mt-5 flex flex-wrap items-center gap-3 animate-rise"
+              style={{ animationDelay: "420ms" }}
             >
-              <Button href="/work" variant="solid">
+              <Button href="/work" variant="ghost">
                 View my work
               </Button>
               {settings.resume_media && (
