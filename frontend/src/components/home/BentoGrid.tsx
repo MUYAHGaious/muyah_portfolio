@@ -1,6 +1,7 @@
 import { ArrowUpRight, FileText, Mail, Sparkles, Wrench } from "lucide-react";
 import Link from "next/link";
 
+import { MiniCalendar } from "@/components/MiniCalendar";
 import { Reveal } from "@/components/motion/Reveal";
 import type { SiteSettings } from "@/lib/types";
 
@@ -143,6 +144,14 @@ export function BentoGrid({
           </a>
         </Reveal>
       ) : null}
+
+      {/* Calendar tile — not a link, so it is a plain card rather than one of
+          the tilting ones; its month controls need to be clickable. */}
+      <Reveal delay={240}>
+        <div className="card h-[19rem] p-6">
+          <MiniCalendar />
+        </div>
+      </Reveal>
 
       <Reveal delay={290} className={settings.resume_media ? "" : "md:col-span-1"}>
         <Link
