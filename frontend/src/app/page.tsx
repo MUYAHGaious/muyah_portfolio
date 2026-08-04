@@ -3,9 +3,11 @@ import Link from "next/link";
 import { Markdown } from "@/components/Markdown";
 import { ProjectGrid } from "@/components/ProjectGrid";
 import { SectionHeading } from "@/components/SectionHeading";
+import { BentoGrid } from "@/components/home/BentoGrid";
 import { Hero } from "@/components/home/Hero";
 import { ServicesSection } from "@/components/home/ServicesSection";
 import { Testimonials } from "@/components/home/Testimonials";
+import { WorkShowcase } from "@/components/home/WorkShowcase";
 import { Parallax } from "@/components/motion/Parallax";
 import { Reveal } from "@/components/motion/Reveal";
 import { getPosts, getProjects, getServices, getSettings, getTestimonials } from "@/lib/api";
@@ -33,9 +35,18 @@ export default async function HomePage() {
           <SectionHeading
             eyebrow="Selected work"
             title="Things I've designed and built."
+            lead="Hover a panel to open it."
             link={{ href: "/work", label: "All work" }}
           />
-          <ProjectGrid projects={projects.slice(0, FEATURED)} />
+          {/* The expanding showcase highlights a handful; the full index at
+              /work uses the grid, which scans better at length. */}
+          <WorkShowcase projects={projects.slice(0, 4)} />
+
+          {projects.length > 4 && (
+            <div className="mt-5">
+              <ProjectGrid projects={projects.slice(4, FEATURED)} />
+            </div>
+          )}
         </section>
       )}
 
@@ -64,7 +75,7 @@ export default async function HomePage() {
                 </h2>
                 <Link
                   href="/about"
-                  className="group mt-6 inline-flex items-center gap-1.5 text-small font-semibold text-ember-deep"
+                  className="group mt-6 inline-flex min-h-9 items-center gap-1.5 text-small font-semibold text-ember-deep"
                 >
                   Read more
                   <span
@@ -134,6 +145,20 @@ export default async function HomePage() {
           </ul>
         </section>
       )}
+
+      <section className="shell pt-20 sm:pt-28">
+        <SectionHeading
+          eyebrow="Explore"
+          title="Everything else worth a look."
+          lead="Counted live, so these numbers are always the real ones."
+        />
+        <BentoGrid
+          settings={settings}
+          projectCount={projects.length}
+          postCount={posts.total}
+          serviceCount={services.length}
+        />
+      </section>
 
       {/* A slow-moving band of warm light: the parallax layer, purely decorative. */}
       <div aria-hidden="true" className="relative h-24 overflow-hidden sm:h-32">
