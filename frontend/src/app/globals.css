@@ -330,6 +330,26 @@ body {
   animation: drift 6s ease-in-out infinite;
 }
 
+@keyframes gem-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Continuous rotation, so it is halted rather than shortened under
+   prefers-reduced-motion — a 0.01ms spin would just look broken. */
+@utility animate-gem-spin {
+  animation: gem-spin 9s linear infinite;
+  transform-origin: 50% 50%;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
 @utility skeleton {
   background-color: var(--surface-2);
   background-image: linear-gradient(

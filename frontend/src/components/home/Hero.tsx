@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/Button";
+import { AnimatedLetterText } from "@/components/ui/animated-letter-text";
 import { LiquidButton } from "@/components/ui/LiquidButton";
 import { shortName } from "@/lib/format";
 import type { Service, SiteSettings } from "@/lib/types";
@@ -52,9 +53,14 @@ export function Hero({
               style={{ animationDelay: "160ms" }}
             >
               {/* Shortened so a three-part name doesn't stack over three lines.
-                  The full name still carries the page title and metadata. */}
-              <span className="sr-only">{settings.name || "Your name"}</span>
-              <span aria-hidden="true">{shortName(settings.name) || "Your name"}</span>
+                  The full name still carries the page title and metadata.
+                  The first "o" becomes a rotating gem; AnimatedLetterText keeps
+                  the plain text available to screen readers. */}
+              <AnimatedLetterText
+                text={shortName(settings.name) || "Your name"}
+                letterToReplace="o"
+                id="hero-name"
+              />
             </h1>
 
             {settings.tagline && (

@@ -281,6 +281,42 @@ EXPERIENCE: list[dict] = []
 # Real quotes from real people only. Add them from /admin/services.
 TESTIMONIALS: list[dict] = []
 
+# Placeholders for --with-examples, so the section can be seen while it is being
+# designed. Worded so they cannot be mistaken for real endorsements: the author
+# is not a person's name and the text says what it is. Delete before going live.
+EXAMPLE_TESTIMONIALS = [
+    {
+        "quote": (
+            "This is placeholder text so the testimonials section can be previewed. "
+            "Replace it with something a real client actually said."
+        ),
+        "author": "Example placeholder",
+        "role": "Delete me, Your Company",
+        "sort_order": 10,
+        "published": True,
+    },
+    {
+        "quote": (
+            "A second placeholder, here to show how the marquee looks with more than "
+            "one card. Not a real quote from a real person."
+        ),
+        "author": "Example placeholder",
+        "role": "Delete me, Another Company",
+        "sort_order": 20,
+        "published": True,
+    },
+    {
+        "quote": (
+            "A third placeholder. Add real quotes at /admin/services and remove these "
+            "before the site goes live."
+        ),
+        "author": "Example placeholder",
+        "role": "Delete me, Third Company",
+        "sort_order": 30,
+        "published": True,
+    },
+]
+
 POSTS = [
     {
         "slug": "constraints-belong-in-the-database",
@@ -331,7 +367,7 @@ SETTINGS = {
 }
 
 
-async def seed(force: bool = False) -> None:
+async def seed(force: bool = False, with_examples: bool = False) -> None:
     async with SessionFactory() as db:
         await ensure_admin_user(db)
         settings_row = await ensure_site_settings(db)
@@ -349,7 +385,12 @@ async def seed(force: bool = False) -> None:
         db.add_all([Experience(**row) for row in EXPERIENCE])
         db.add_all([Post(**row) for row in POSTS])
         db.add_all([Service(**row) for row in SERVICES])
-        db.add_all([Testimonial(**row) for row in TESTIMONIALS])
+        db.add_all(
+            [
+                Testimonial(**row)
+                for row in (EXAMPLE_TESTIMONIALS if with_examples else TESTIMONIALS)
+            ]
+        )
 
         for field, value in SETTINGS.items():
             setattr(settings_row, field, value)
@@ -370,7 +411,16 @@ def main() -> None:
         action="store_true",
         help="Delete existing content before seeding.",
     )
-    asyncio.run(seed(force=parser.parse_args().force))
+    parser.add_argument(
+        "--with-examples",
+        action="store_true",
+        help=(
+            "Also insert clearly-labelled placeholder testimonials so the section "
+            "can be previewed. Delete them before going live."
+        ),
+    )
+    args = parser.parse_args()
+    asyncio.run(seed(force=args.force, with_examples=args.with_examples))
 
 
 if __name__ == "__main__":

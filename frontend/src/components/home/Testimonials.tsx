@@ -1,200 +1,137 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import type { Testimonial } from "@/lib/types";
 
 /**
- * Marquee of testimonial capsules; clicking one opens the full quote.
+ * Testimonial marquee: a card per quote, each paired with a panel carrying the
+ * person's company set on a dotted grid.
  *
- * Driven entirely by the testimonials in the database. The original shipped
- * nine invented people with stock photos endorsing a different product — a
- * fabricated endorsement is the most damaging thing a portfolio can carry,
- * because it is the one claim someone might actually try to verify.
+ * Adapted from the supplied component. Three departures:
  *
- * So this renders nothing at all while there are none. An empty "trusted by"
- * section is worse than no section; an invented one is worse still.
+ *  - It is fed by the testimonials table, not a hardcoded array. The original
+ *    ships six invented people with stock photographs endorsing an unnamed
+ *    product; a fabricated endorsement is the one claim on a portfolio someone
+ *    might actually try to verify.
+ *  - The company panel renders the company as a wordmark rather than an image.
+ *    There are no client logo assets, and a generic placeholder logo would
+ *    imply a client relationship that may not exist.
+ *  - The marquee is a CSS animation rather than a JS library, and it pauses on
+ *    hover and halts entirely under prefers-reduced-motion.
+ *
+ * Renders nothing while there are no testimonials. An empty "Success stories"
+ * heading is worse than no section.
  */
 export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) {
-  const [selected, setSelected] = useState<Testimonial | null>(null);
-
-  // Escape closes the dialog, and the page behind it must not scroll while open.
-  useEffect(() => {
-    if (!selected) return;
-
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelected(null);
-    };
-
-    document.addEventListener("keydown", onKey);
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = previous;
-    };
-  }, [selected]);
+  const [paused, setPaused] = useState(false);
 
   if (testimonials.length === 0) return null;
 
-  // Two rows travelling in opposite directions once there are enough to fill
-  // them; below that a single row reads as intentional rather than sparse.
-  const rows =
-    testimonials.length >= 4
-      ? [
-          testimonials.slice(0, Math.ceil(testimonials.length / 2)),
-          testimonials.slice(Math.ceil(testimonials.length / 2)),
-        ]
-      : [testimonials];
+  // Duplicated so the strip is wider than any viewport and -50% loops seamlessly.
+  const track = [...testimonials, ...testimonials];
+
+  // Slower with more cards, so the reading speed stays constant.
+  const duration = Math.max(30, testimonials.length * 12);
 
   return (
-    <div className="relative w-full overflow-hidden">
-      {/* Edge fades, so capsules dissolve rather than being clipped. */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-16 bg-gradient-to-r from-ground to-transparent sm:w-32" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-16 bg-gradient-to-l from-ground to-transparent sm:w-32" />
+    <div
+      className="relative w-full overflow-hidden"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-12 bg-gradient-to-r from-ground to-transparent sm:w-28" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-12 bg-gradient-to-l from-ground to-transparent sm:w-28" />
 
-      <div className="flex flex-col gap-4 py-2">
-        {rows.map((row, rowIndex) => {
-          // Repeated so the strip is wider than any viewport; translating by
-          // exactly -50% then loops seamlessly.
-          const track = [...row, ...row, ...row, ...row];
-
-          return (
-            <motion.ul
-              key={rowIndex}
-              className="flex min-w-max items-center gap-4"
-              animate={{ x: rowIndex % 2 === 0 ? ["0%", "-50%"] : ["-50%", "0%"] }}
-              transition={{
-                duration: Math.max(28, track.length * 4),
-                repeat: Infinity,
-                ease: "linear",
-              }}
-              // A continuously moving strip is a common accessibility complaint;
-              // reduced-motion users get a static, scrollable row instead.
-              style={{ animationPlayState: "running" }}
-            >
-              {track.map((testimonial, index) => (
-                <li key={`${testimonial.id}-${index}`}>
-                  <Capsule
-                    testimonial={testimonial}
-                    onSelect={() => setSelected(testimonial)}
-                    // Only the first copy is exposed; the rest are visual filler
-                    // and would otherwise be read out four times over.
-                    duplicate={index >= row.length}
-                  />
-                </li>
-              ))}
-            </motion.ul>
-          );
-        })}
-      </div>
-
-      <AnimatePresence>
-        {selected && (
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Testimonial from ${selected.author}`}
-            className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+      <ul
+        className="flex min-w-max items-stretch gap-4 motion-reduce:animate-none"
+        style={{
+          animation: `marquee ${duration}s linear infinite`,
+          animationPlayState: paused ? "paused" : "running",
+        }}
+      >
+        {track.map((testimonial, index) => (
+          <li
+            key={`${testimonial.id}-${index}`}
+            // Alternating direction gives the row the staggered rhythm of the
+            // original without needing a second track.
+            className={`flex w-[22rem] shrink-0 flex-col gap-px ${
+              index % 2 === 1 ? "flex-col-reverse" : ""
+            }`}
+            aria-hidden={index >= testimonials.length || undefined}
           >
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelected(null)}
-              className="absolute inset-0 bg-ink/30 backdrop-blur-md"
-            />
+            <article className="card p-6">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  {testimonial.avatar ? (
+                    <img
+                      src={testimonial.avatar.url}
+                      alt=""
+                      className="h-10 w-10 shrink-0 rounded-full border border-line object-cover"
+                    />
+                  ) : (
+                    <span
+                      aria-hidden="true"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ember font-bold text-white"
+                    >
+                      {testimonial.author.charAt(0).toUpperCase()}
+                    </span>
+                  )}
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.94, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 8, transition: { duration: 0.15 } }}
-              transition={{ duration: 0.22, ease: "easeOut" }}
-              className="panel relative z-10 w-full max-w-lg p-8 sm:p-12"
-            >
-              <button
-                type="button"
-                onClick={() => setSelected(null)}
-                aria-label="Close"
-                className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-surface-2 hover:text-ink"
-              >
-                <X size={18} aria-hidden="true" />
-              </button>
-
-              <figure className="flex flex-col items-center text-center">
-                <blockquote className="text-lead font-medium leading-relaxed text-ink">
-                  &ldquo;{selected.quote}&rdquo;
-                </blockquote>
-
-                <figcaption className="mt-8 flex items-center gap-4">
-                  <Avatar testimonial={selected} size="h-12 w-12" />
-                  <span className="text-left">
-                    <span className="block font-bold text-ink">{selected.author}</span>
-                    {selected.role && (
-                      <span className="block text-small text-ink-soft">{selected.role}</span>
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-ink">{testimonial.author}</p>
+                    {testimonial.role && (
+                      <p className="truncate text-small text-ink-soft">{testimonial.role}</p>
                     )}
-                  </span>
-                </figcaption>
-              </figure>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+                  </div>
+                </div>
+              </div>
+
+              <p className="mt-5 text-small leading-relaxed text-ink-soft">
+                &ldquo;{testimonial.quote}&rdquo;
+              </p>
+            </article>
+
+            {/* Company panel: the wordmark on a dotted grid, matching the
+                original's logo plate without inventing a logo. */}
+            <div className="relative flex h-28 items-center justify-center overflow-hidden rounded-[var(--r-md)] p-6">
+              <span className="relative z-10 max-w-full truncate text-h4 font-extrabold uppercase tracking-tight text-ink-faint">
+                {companyOf(testimonial.role) || testimonial.author}
+              </span>
+
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 -z-0 opacity-30"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(to right, var(--field) 1px, transparent 1px), linear-gradient(to bottom, var(--field) 1px, transparent 1px)",
+                  backgroundSize: "20px 20px",
+                  maskImage:
+                    "radial-gradient(ellipse at center, black 20%, transparent 72%)",
+                  WebkitMaskImage:
+                    "radial-gradient(ellipse at center, black 20%, transparent 72%)",
+                }}
+              />
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <style>{`
+        @keyframes marquee {
+          from { transform: translate3d(0, 0, 0); }
+          to   { transform: translate3d(-50%, 0, 0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          ul[style*="marquee"] { animation: none !important; }
+        }
+      `}</style>
     </div>
   );
 }
 
-function Avatar({ testimonial, size }: { testimonial: Testimonial; size: string }) {
-  if (testimonial.avatar) {
-    return (
-      <img
-        src={testimonial.avatar.url}
-        alt=""
-        className={`${size} shrink-0 rounded-full border border-line object-cover`}
-      />
-    );
-  }
-
-  return (
-    <span
-      aria-hidden="true"
-      className={`${size} flex shrink-0 items-center justify-center rounded-full bg-ember/15 font-bold text-ember-deep`}
-    >
-      {testimonial.author.charAt(0).toUpperCase()}
-    </span>
-  );
-}
-
-function Capsule({
-  testimonial,
-  onSelect,
-  duplicate,
-}: {
-  testimonial: Testimonial;
-  onSelect: () => void;
-  duplicate: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onSelect}
-      aria-hidden={duplicate || undefined}
-      tabIndex={duplicate ? -1 : 0}
-      className="group flex items-center gap-3 rounded-full border border-line bg-surface py-2 pl-2 pr-6 shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:border-ember hover:shadow-card motion-reduce:hover:translate-y-0"
-    >
-      <Avatar testimonial={testimonial} size="h-12 w-12" />
-
-      <span className="flex flex-col items-start leading-tight">
-        <span className="text-small font-bold text-ink">{testimonial.author}</span>
-        {testimonial.role && (
-          <span className="text-micro normal-case tracking-normal text-ink-soft">
-            {testimonial.role}
-          </span>
-        )}
-      </span>
-    </button>
-  );
+/** "CTO, InsightTech" → "InsightTech". Returns "" when there is no company part. */
+function companyOf(role: string): string {
+  if (!role.includes(",")) return "";
+  return role.split(",").slice(1).join(",").trim();
 }
