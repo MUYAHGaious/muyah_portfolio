@@ -158,11 +158,14 @@ export function DockLabel({
       {visible && (
         <motion.span
           initial={{ opacity: 0, y: 0 }}
-          animate={{ opacity: 1, y: -8 }}
+          animate={{ opacity: 1, y: 8 }}
           exit={{ opacity: 0, y: 0 }}
           transition={{ duration: 0.18 }}
+          // Below the icon, not above: the dock sits in the header at the very
+          // top of the page, where a tooltip above it would be clipped by the
+          // viewport edge.
           className={cn(
-            "pointer-events-none absolute -top-8 left-1/2 w-fit whitespace-pre rounded-full bg-ink px-2.5 py-1 text-micro font-semibold normal-case tracking-normal text-surface",
+            "pointer-events-none absolute -bottom-8 left-1/2 w-fit whitespace-pre rounded-full bg-ink px-2.5 py-1 text-micro font-semibold normal-case tracking-normal text-surface",
             className,
           )}
           role="tooltip"
