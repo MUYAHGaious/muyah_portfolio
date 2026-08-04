@@ -75,7 +75,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
         <LoadingScreen name={settings.name} />
 
-        <SiteHeader name={settings.name} />
+        <SiteHeader name={settings.name} location={settings.location} />
         <main id="main" className="flex-1">
           {children}
         </main>

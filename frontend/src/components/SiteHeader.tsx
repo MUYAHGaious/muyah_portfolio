@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { WeatherBadge } from "@/components/WeatherBadge";
 import { Button } from "@/components/ui/Button";
 import { Dock, DockIcon, DockItem, DockLabel } from "@/components/ui/dock";
 
@@ -17,7 +18,7 @@ const NAV = [
   { href: "/about", label: "About", icon: User },
 ];
 
-export function SiteHeader({ name }: { name: string }) {
+export function SiteHeader({ name, location = "" }: { name: string; location?: string }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -100,6 +101,15 @@ export function SiteHeader({ name }: { name: string }) {
           </nav>
 
           <div className="flex items-center gap-2">
+            {/* Desktop only — on small screens it lives inside the menu, where
+                there is room for the condition and city as well. */}
+            {location && (
+              <WeatherBadge
+                location={location}
+                className="hidden lg:inline-flex mr-1 border-r border-line pr-3"
+              />
+            )}
+
             <ThemeToggle />
             <Button href="/contact" variant="ember" size="sm" className="hidden sm:inline-flex">
               Let&apos;s talk
@@ -157,6 +167,13 @@ export function SiteHeader({ name }: { name: string }) {
                 Let&apos;s talk
               </Button>
             </div>
+
+            {location && (
+              <div className="mt-2 flex items-center justify-between gap-3 border-t border-line px-4 pt-3">
+                <span className="eyebrow">Right now</span>
+                <WeatherBadge location={location} showCity />
+              </div>
+            )}
           </nav>
         )}
       </div>
