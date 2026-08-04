@@ -45,7 +45,7 @@ export function SiteHeader({ name }: { name: string }) {
     <header className="sticky top-0 z-50 pt-3 sm:pt-4">
       <div className="shell">
         <div
-          className={`flex items-center justify-between gap-4 rounded-full px-4 py-2.5 sm:px-5 transition-[background-color,box-shadow,backdrop-filter] duration-300 ${
+          className={`relative flex items-center justify-between gap-4 rounded-full px-4 py-2.5 sm:px-5 transition-[background-color,box-shadow,backdrop-filter] duration-300 ${
             scrolled ? "bg-surface/85 shadow-card backdrop-blur-md" : "bg-transparent"
           }`}
         >
@@ -58,8 +58,15 @@ export function SiteHeader({ name }: { name: string }) {
           </Link>
 
           {/* Desktop: a magnifying dock. The label appears on hover and on
-              keyboard focus, so tabbing never lands on an unlabelled icon. */}
-          <nav aria-label="Main" className="hidden md:block">
+              keyboard focus, so tabbing never lands on an unlabelled icon.
+
+              Absolutely centred so that items growing under the pointer expand
+              symmetrically about the middle instead of reflowing the bar and
+              nudging the wordmark and the CTA sideways. */}
+          <nav
+            aria-label="Main"
+            className="hidden md:block md:absolute md:left-1/2 md:-translate-x-1/2"
+          >
             <Dock className="items-center" panelHeight={44} magnification={64} distance={130}>
               {NAV.map((item) => {
                 const current = isCurrent(item.href);

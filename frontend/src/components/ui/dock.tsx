@@ -15,7 +15,6 @@ import {
   createContext,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -37,7 +36,6 @@ import { cn } from "@/lib/utils";
  *    label, so tabbing through never leaves an unlabelled row of icons.
  */
 
-const DOCK_HEIGHT = 112;
 const DEFAULT_MAGNIFICATION = 68;
 const DEFAULT_DISTANCE = 140;
 const DEFAULT_PANEL_HEIGHT = 48;
@@ -74,38 +72,28 @@ export function Dock({
   spring?: SpringOptions;
 }) {
   const mouseX = useMotionValue(Infinity);
-  const isHovered = useMotionValue(0);
 
-  const maxHeight = useMemo(
-    () => Math.max(DOCK_HEIGHT, magnification + magnification / 2 + 4),
-    [magnification],
-  );
-
-  const heightRow = useTransform(isHovered, [0, 1], [panelHeight, maxHeight]);
-  const height = useSpring(heightRow, spring);
-
+  // The original springs the container's height on hover. Inside a sticky
+  // header that height is in normal flow, so every pointer movement resized the
+  // bar and shoved the page down — the whole document appeared to shake. The
+  // container is now a fixed height and the magnification happens entirely
+  // inside it.
   return (
-    <motion.div
-      style={{ height, scrollbarWidth: "none" }}
-      className="flex max-w-full items-end overflow-visible"
+    <div
+      style={{ height: panelHeight, scrollbarWidth: "none" }}
+      className="flex max-w-full items-center overflow-visible"
     >
       <motion.div
-        onMouseMove={({ pageX }) => {
-          isHovered.set(1);
-          mouseX.set(pageX);
-        }}
-        onMouseLeave={() => {
-          isHovered.set(0);
-          mouseX.set(Infinity);
-        }}
-        className={cn("mx-auto flex w-fit items-end gap-2", className)}
+        onMouseMove={({ pageX }) => mouseX.set(pageX)}
+        onMouseLeave={() => mouseX.set(Infinity)}
+        className={cn("mx-auto flex w-fit items-center gap-1", className)}
         style={{ height: panelHeight }}
       >
         <DockContext.Provider value={{ mouseX, spring, distance, magnification }}>
           {children}
         </DockContext.Provider>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -196,10 +184,18 @@ export function DockIcon({
   className?: string;
 }) {
   const width = (rest as Record<string, unknown>).width as MotionValue<number>;
-  const iconWidth = useTransform(width ?? useMotionValue(BASE_ITEM_WIDTH), (value) => value / 2);
+  const fallback = useMotionValue(BASE_ITEM_WIDTH);
+
+  // Fills the item rather than half of it. Halving looked right but left the
+  // link inside only 20px wide, under the 24px minimum target size — the dock
+  // still magnifies, the hit area just matches what you see.
+  const iconWidth = useTransform(width ?? fallback, (value) => Math.max(value, BASE_ITEM_WIDTH));
 
   return (
-    <motion.span style={{ width: iconWidth }} className={cn("flex items-center justify-center", className)}>
+    <motion.span
+      style={{ width: iconWidth }}
+      className={cn("flex items-center justify-center", className)}
+    >
       {children}
     </motion.span>
   );
