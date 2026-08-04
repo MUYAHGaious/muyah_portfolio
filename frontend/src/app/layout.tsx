@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 
 import { BottomNav } from "@/components/BottomNav";
 import { LiveChat } from "@/components/LiveChat";
+import { SiteBackground } from "@/components/SiteBackground";
 import { PageViewTracker } from "@/components/PageViewTracker";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -63,6 +64,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script dangerouslySetInnerHTML={{ __html: BOOTSTRAP }} />
       </head>
       <body className="min-h-dvh flex flex-col">
+        <SiteBackground />
+
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:z-[110] focus:left-4 focus:top-4 focus:rounded-full focus:bg-ink focus:px-5 focus:py-2.5 focus:text-small focus:text-surface"
