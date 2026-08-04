@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 
 import { PageHero } from "@/components/PageHero";
 import { ProjectGrid } from "@/components/ProjectGrid";
+import { SectionHeading } from "@/components/SectionHeading";
+import { WorkShowcase } from "@/components/home/WorkShowcase";
 import { getProjects } from "@/lib/api";
 
 export const metadata: Metadata = {
@@ -34,7 +36,20 @@ export default async function WorkPage() {
         )}
       </PageHero>
 
-      <section className="shell pt-12 sm:pt-16">
+      {/* Expanding panels for the most recent handful, then the full grid.
+          This treatment lives here rather than on the home page, where it
+          would compete with the slider for the same job. */}
+      {projects.length >= 2 && (
+        <section className="shell pt-12 sm:pt-16">
+          <SectionHeading eyebrow="Most recent" title="Open a panel." />
+          <WorkShowcase projects={projects.slice(0, 4)} />
+        </section>
+      )}
+
+      <section className="shell pt-16 sm:pt-20">
+        {projects.length >= 2 && (
+          <SectionHeading eyebrow="Everything" title="The full index." />
+        )}
         <ProjectGrid projects={projects} />
       </section>
     </>
