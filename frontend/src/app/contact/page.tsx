@@ -30,7 +30,7 @@ export default async function ContactPage() {
               {settings.email ? (
                 <a
                   href={`mailto:${settings.email}`}
-                  className="mt-2 block break-words text-h4 font-bold tracking-tight text-ink transition-colors hover:text-ember-deep"
+                  className="mt-2 inline-flex min-h-11 items-center break-all text-h4 font-bold tracking-tight text-ink transition-colors hover:text-ember-deep"
                 >
                   {settings.email}
                 </a>

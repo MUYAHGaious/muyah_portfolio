@@ -25,7 +25,8 @@ export function SectionHeading({
       {link && (
         <Link
           href={link.href}
-          className="group inline-flex shrink-0 items-center gap-1.5 text-small font-semibold text-ember-deep"
+          // min-h-9 so the hit area clears the 24px minimum — the text is 22px.
+          className="group inline-flex min-h-9 shrink-0 items-center gap-1.5 self-start text-small font-semibold text-ember-deep"
         >
           {link.label}
           <span

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
+import { BottomNav } from "@/components/BottomNav";
+import { LiveChat } from "@/components/LiveChat";
 import { PageViewTracker } from "@/components/PageViewTracker";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -76,7 +78,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </main>
         <SiteFooter settings={settings} />
 
+        {/* Clears the fixed bottom bar so the footer is never trapped beneath it. */}
+        <div aria-hidden="true" className="h-20 md:hidden" />
+
+        <BottomNav />
         <PageViewTracker />
+        <LiveChat />
       </body>
     </html>
   );
