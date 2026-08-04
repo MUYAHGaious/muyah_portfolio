@@ -1,18 +1,20 @@
 "use client";
 
+import { Briefcase, Home, PenLine, User, Wrench } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/Button";
+import { Dock, DockIcon, DockItem, DockLabel } from "@/components/ui/dock";
 
 const NAV = [
-  { href: "/", label: "Home" },
-  { href: "/work", label: "Work" },
-  { href: "/services", label: "Services" },
-  { href: "/writing", label: "Writing" },
-  { href: "/about", label: "About" },
+  { href: "/", label: "Home", icon: Home },
+  { href: "/work", label: "Work", icon: Briefcase },
+  { href: "/services", label: "Services", icon: Wrench },
+  { href: "/writing", label: "Writing", icon: PenLine },
+  { href: "/about", label: "About", icon: User },
 ];
 
 export function SiteHeader({ name }: { name: string }) {
@@ -49,33 +51,45 @@ export function SiteHeader({ name }: { name: string }) {
         >
           <Link
             href="/"
-            className="text-h4 font-bold tracking-tight text-ink shrink-0 transition-opacity hover:opacity-70"
+            className="inline-flex min-h-11 md:min-h-9 shrink-0 items-center text-h4 font-bold tracking-tight text-ink transition-opacity hover:opacity-70"
           >
             {wordmark}
             <span className="text-ember">.</span>
           </Link>
 
-          <nav aria-label="Main" className="hidden md:flex items-center gap-1">
-            {NAV.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={isCurrent(item.href) ? "page" : undefined}
-                className={`relative rounded-full px-3.5 py-1.5 text-small font-medium transition-colors duration-200 ${
-                  isCurrent(item.href)
-                    ? "text-ink"
-                    : "text-ink-soft hover:text-ink"
-                }`}
-              >
-                {item.label}
-                {isCurrent(item.href) && (
-                  <span
-                    aria-hidden="true"
-                    className="absolute inset-x-3.5 -bottom-0.5 h-0.5 rounded-full bg-ember"
-                  />
-                )}
-              </Link>
-            ))}
+          {/* Desktop: a magnifying dock. The label appears on hover and on
+              keyboard focus, so tabbing never lands on an unlabelled icon. */}
+          <nav aria-label="Main" className="hidden md:block">
+            <Dock className="items-center" panelHeight={44} magnification={64} distance={130}>
+              {NAV.map((item) => {
+                const current = isCurrent(item.href);
+                const Icon = item.icon;
+
+                return (
+                  <DockItem key={item.href}>
+                    <DockLabel>{item.label}</DockLabel>
+                    <DockIcon>
+                      <Link
+                        href={item.href}
+                        aria-label={item.label}
+                        aria-current={current ? "page" : undefined}
+                        className={`relative flex h-10 w-full items-center justify-center rounded-full transition-colors duration-200 ${
+                          current ? "text-ember-deep" : "text-ink-soft hover:text-ink"
+                        }`}
+                      >
+                        <Icon aria-hidden="true" className="h-[1.15rem] w-[1.15rem]" strokeWidth={1.8} />
+                        {current && (
+                          <span
+                            aria-hidden="true"
+                            className="absolute -bottom-1 h-1 w-1 rounded-full bg-ember"
+                          />
+                        )}
+                      </Link>
+                    </DockIcon>
+                  </DockItem>
+                );
+              })}
+            </Dock>
           </nav>
 
           <div className="flex items-center gap-2">
@@ -90,7 +104,7 @@ export function SiteHeader({ name }: { name: string }) {
               aria-expanded={menuOpen}
               aria-controls="mobile-nav"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
-              className="md:hidden flex h-9 w-9 items-center justify-center rounded-full border border-field text-ink"
+              className="md:hidden flex h-11 w-11 items-center justify-center rounded-full border border-field text-ink"
             >
               <span aria-hidden="true" className="relative block h-3 w-4">
                 <span
