@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/Button";
+import { shortName } from "@/lib/format";
 import type { Service, SiteSettings } from "@/lib/types";
 
 /**
@@ -49,7 +50,10 @@ export function Hero({
               className="mt-2 text-h1 font-bold text-ink animate-rise"
               style={{ animationDelay: "160ms" }}
             >
-              {settings.name || "Your name"}
+              {/* Shortened so a three-part name doesn't stack over three lines.
+                  The full name still carries the page title and metadata. */}
+              <span className="sr-only">{settings.name || "Your name"}</span>
+              <span aria-hidden="true">{shortName(settings.name) || "Your name"}</span>
             </h1>
 
             {settings.tagline && (

@@ -34,3 +34,22 @@ export function year(iso: string): string {
 export function pad(value: number): string {
   return value.toString().padStart(2, "0");
 }
+
+/**
+ * Shortens a full name for display, initialising the final part:
+ * "Muyah Gaious Angwe" → "Muyah Gaious A."
+ *
+ * Set at three-plus parts only, so a one- or two-word name is left alone. The
+ * full name is still used for page titles and structured metadata, where the
+ * complete version is what search results should show.
+ */
+export function shortName(full: string): string {
+  const parts = full.trim().split(/\s+/).filter(Boolean);
+  if (parts.length < 3) return full.trim();
+
+  const last = parts[parts.length - 1];
+  // Already an initial, e.g. "Muyah Gaious A." — leave it as written.
+  if (last.replace(".", "").length <= 1) return parts.join(" ");
+
+  return `${parts.slice(0, -1).join(" ")} ${last[0].toUpperCase()}.`;
+}
