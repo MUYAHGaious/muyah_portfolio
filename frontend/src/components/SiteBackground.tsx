@@ -17,7 +17,7 @@ export function SiteBackground() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 -z-10 opacity-[0.32] dark:opacity-[0.12]"
+      className="pointer-events-none fixed inset-0 -z-10 opacity-[0.55] dark:opacity-[0.18]"
     >
       <GradientBackground className="h-full w-full" />
     </div>

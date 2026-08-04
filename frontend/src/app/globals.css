@@ -172,9 +172,16 @@ body {
   }
 }
 
-/* The recurring container: a large rounded panel floating on the ground. */
+/* The recurring container: a large rounded panel floating on the ground.
+
+   Deliberately translucent. The vermilion rings are centred on the viewport,
+   which is precisely where these panels sit — an opaque surface hid the pattern
+   entirely and left only the outer bands visible around the edges. Frosting the
+   panels lets the rings read through the content area, which is the point of
+   having them. */
 @utility panel {
-  background-color: var(--surface);
+  background-color: color-mix(in srgb, var(--surface) 82%, transparent);
+  backdrop-filter: blur(16px);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-md);
 
@@ -184,7 +191,8 @@ body {
 }
 
 @utility card {
-  background-color: var(--surface);
+  background-color: color-mix(in srgb, var(--surface) 86%, transparent);
+  backdrop-filter: blur(12px);
   border-radius: var(--r-md);
   box-shadow: var(--shadow-sm);
   transition:
