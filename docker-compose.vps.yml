@@ -1,0 +1,43 @@
+# Overrides for the shared Contabo VPS, where nginx already terminates TLS for a
+# dozen other sites. Use it alongside the base file:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.vps.yml up -d --build
+#
+# The base file stands alone on a machine where this stack owns ports 80/443.
+# Here it does not, so three things change: Caddy stays down, the app binds to
+# loopback ports nginx forwards to, and uploads live on the host filesystem so
+# nginx can serve them without reaching into a Docker volume.
+
+services:
+  caddy:
+    # nginx owns 80/443 on this box. Parking Caddy in a profile that is never
+    # enabled leaves the service defined for standalone deploys while keeping
+    # `docker compose up` from starting it — publishing 80/443 here would either
+    # fail to bind or take the other twelve sites offline.
+    profiles: ["standalone"]
+
+  api:
+    ports:
+      # Loopback only. nginx proxies /api/ here; nothing reaches this port from
+      # the internet directly.
+      - "127.0.0.1:8005:8000"
+    volumes:
+      # Replaces the named volume from the base file (compose keys service
+      # volumes by target path). A host directory means nginx can serve the
+      # files itself and backups are a plain `tar` of a visible folder.
+      #
+      # The directory must be owned by uid 10001 — the unprivileged user the API
+      # container runs as — or writes fail. See DEPLOY-VPS.md.
+      - ./uploads:/srv/uploads
+
+  web:
+    ports:
+      - "127.0.0.1:3004:3000"
+
+  db:
+    # Each site on this machine runs its own Postgres container rather than
+    # sharing the host instance, which is the pattern already in use here
+    # (chongwe-postgres, trackcore-postgres, ms2e-postgres). Nothing is
+    # published; only `api` reaches it over the compose network.
+    volumes:
+      - pgdata:/var/lib/postgresql/data
