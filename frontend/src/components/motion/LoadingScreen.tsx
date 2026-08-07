@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { LottieLoader } from "@/components/motion/LottieLoader";
+
 /**
  * Intro overlay shown while the first page settles, then faded out for good.
  *
@@ -15,7 +17,12 @@ import { useEffect, useState } from "react";
  * here runs and the visitor simply sees the site.
  */
 const SESSION_KEY = "intro-shown";
-const HOLD_MS = 900;
+/**
+ * Long enough for the Lottie to fetch and play a beat on a first visit, short
+ * enough not to be an obstacle. This is an artificial delay — it is capped
+ * deliberately and only ever runs once per session.
+ */
+const HOLD_MS = 1600;
 const FADE_MS = 600;
 
 export function LoadingScreen({ name }: { name: string }) {
@@ -65,10 +72,17 @@ export function LoadingScreen({ name }: { name: string }) {
       <div aria-hidden="true" className="glow h-[28rem] w-[28rem]" />
 
       <div className="relative flex flex-col items-center gap-5">
-        <span className="relative flex h-14 w-14 items-center justify-center">
-          <span className="absolute inset-0 rounded-full border-2 border-ember [animation:pulse-ring_1.4s_ease-out_infinite]" />
-          <span className="h-3 w-3 rounded-full bg-ember" />
-        </span>
+        {/* The ring doubles as the fallback: it renders immediately, and the
+            Lottie replaces it once the player and animation data have both
+            arrived. If either fails, the ring simply stays. */}
+        <LottieLoader
+          fallback={
+            <span className="relative flex h-14 w-14 items-center justify-center">
+              <span className="absolute inset-0 rounded-full border-2 border-ember [animation:pulse-ring_1.4s_ease-out_infinite]" />
+              <span className="h-3 w-3 rounded-full bg-ember" />
+            </span>
+          }
+        />
 
         <span className="text-h4 font-bold tracking-tight text-ink animate-rise">
           {name || "Loading"}
