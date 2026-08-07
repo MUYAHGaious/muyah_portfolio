@@ -8,6 +8,13 @@ import { getSettings } from "@/lib/api";
 export const metadata: Metadata = {
   title: "Contact",
   description: "Get in touch about work or collaboration.",
+  alternates: { canonical: "/contact" },
+  openGraph: {
+    title: "Contact",
+    description: "Get in touch about work or collaboration.",
+    type: "website",
+    url: "/contact",
+  },
 };
 
 export default async function ContactPage() {

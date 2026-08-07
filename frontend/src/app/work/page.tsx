@@ -9,6 +9,13 @@ import { getProjects } from "@/lib/api";
 export const metadata: Metadata = {
   title: "Work",
   description: "Selected projects and case studies.",
+  alternates: { canonical: "/work" },
+  openGraph: {
+    title: "Work",
+    description: "Selected projects and case studies.",
+    type: "website",
+    url: "/work",
+  },
 };
 
 export default async function WorkPage() {

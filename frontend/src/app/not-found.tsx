@@ -1,4 +1,13 @@
+import type { Metadata } from "next";
+
 import { Button } from "@/components/ui/Button";
+
+// A 404 already sends the right status code, but an explicit noindex stops
+// mistyped and long-dead URLs accumulating as thin pages in the index.
+export const metadata: Metadata = {
+  title: "Page not found",
+  robots: { index: false, follow: true },
+};
 
 export default function NotFound() {
   return (

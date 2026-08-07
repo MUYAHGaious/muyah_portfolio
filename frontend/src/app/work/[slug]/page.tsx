@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { JsonLd } from "@/components/JsonLd";
 import { Markdown } from "@/components/Markdown";
 import { Parallax } from "@/components/motion/Parallax";
 import { Reveal } from "@/components/motion/Reveal";
 import { Button } from "@/components/ui/Button";
-import { getProject, getProjects } from "@/lib/api";
+import { getProject, getProjects, getSettings } from "@/lib/api";
+import { absolute, breadcrumbSchema, graph, projectSchema } from "@/lib/seo";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -17,15 +19,40 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const project = await getProject((await params).slug);
-  if (!project) return { title: "Not found" };
+  // A missing project must not be indexable — otherwise every mistyped URL
+  // becomes a thin page competing with the real ones.
+  if (!project) return { title: "Not found", robots: { index: false, follow: false } };
+
+  const path = `/work/${project.slug}`;
+  const images = project.cover_image
+    ? [
+        {
+          url: absolute(project.cover_image.url),
+          width: project.cover_image.width,
+          height: project.cover_image.height,
+          alt: project.cover_image.alt_text || project.title,
+        },
+      ]
+    : undefined;
 
   return {
     title: project.title,
     description: project.summary,
+    ...(project.tech.length > 0 && { keywords: project.tech }),
+    alternates: { canonical: path },
     openGraph: {
       title: project.title,
       description: project.summary,
-      images: project.cover_image ? [project.cover_image.url] : undefined,
+      type: "article",
+      url: absolute(path),
+      publishedTime: project.created_at,
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: project.title,
+      description: project.summary,
+      ...(images && { images: images.map((image) => image.url) }),
     },
   };
 }
@@ -34,7 +61,11 @@ const LINK_LABELS: Record<string, string> = { live: "Visit site", repo: "Source 
 
 export default async function ProjectPage({ params }: Params) {
   const { slug } = await params;
-  const [project, all] = await Promise.all([getProject(slug), getProjects()]);
+  const [project, all, settings] = await Promise.all([
+    getProject(slug),
+    getProjects(),
+    getSettings(),
+  ]);
   if (!project) notFound();
 
   const links = Object.entries(project.links).filter(([, url]) => url);
@@ -42,6 +73,16 @@ export default async function ProjectPage({ params }: Params) {
 
   return (
     <article>
+      <JsonLd
+        data={graph(
+          projectSchema(project, settings),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Work", path: "/work" },
+            { name: project.title, path: `/work/${project.slug}` },
+          ]),
+        )}
+      />
       <section className="shell pt-3">
         <div className="panel relative overflow-hidden px-6 py-12 sm:px-12 sm:py-16">
           <div aria-hidden="true" className="glow -top-24 right-0 h-80 w-80" />

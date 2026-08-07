@@ -6,18 +6,40 @@ import { Testimonials } from "@/components/home/Testimonials";
 import { Reveal } from "@/components/motion/Reveal";
 import { SectionHeading } from "@/components/SectionHeading";
 import { Button } from "@/components/ui/Button";
-import { getServices, getTestimonials } from "@/lib/api";
+import { JsonLd } from "@/components/JsonLd";
+import { getServices, getSettings, getTestimonials } from "@/lib/api";
+import { breadcrumbSchema, graph, servicesSchema } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Services",
   description: "What I take on, and what working together looks like.",
+  alternates: { canonical: "/services" },
+  openGraph: {
+    title: "Services",
+    description: "What I take on, and what working together looks like.",
+    type: "website",
+    url: "/services",
+  },
 };
 
 export default async function ServicesPage() {
-  const [services, testimonials] = await Promise.all([getServices(), getTestimonials()]);
+  const [services, testimonials, settings] = await Promise.all([
+    getServices(),
+    getTestimonials(),
+    getSettings(),
+  ]);
 
   return (
     <>
+      <JsonLd
+        data={graph(
+          servicesSchema(services, settings),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
+          ]),
+        )}
+      />
       <PageHero
         eyebrow="Services"
         title="How I can help."

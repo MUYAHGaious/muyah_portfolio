@@ -9,6 +9,15 @@ import { fullDate } from "@/lib/format";
 export const metadata: Metadata = {
   title: "Writing",
   description: "Notes and longer pieces.",
+  // Points ?page=2 and ?tag=x back at the clean URL. Without this, every tag
+  // filter is a near-duplicate of the index competing against it in search.
+  alternates: { canonical: "/writing" },
+  openGraph: {
+    title: "Writing",
+    description: "Notes and longer pieces.",
+    type: "website",
+    url: "/writing",
+  },
 };
 
 type Search = { searchParams: Promise<{ page?: string; tag?: string }> };

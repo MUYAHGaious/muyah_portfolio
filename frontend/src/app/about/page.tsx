@@ -14,6 +14,13 @@ import { slugsForTech } from "@/lib/tech-icons";
 export const metadata: Metadata = {
   title: "About",
   description: "Background, experience, and how to get in touch.",
+  alternates: { canonical: "/about" },
+  openGraph: {
+    title: "About",
+    description: "Background, experience, and how to get in touch.",
+    type: "profile",
+    url: "/about",
+  },
 };
 
 export default async function AboutPage() {

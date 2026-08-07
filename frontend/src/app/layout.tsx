@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 
 import { BottomNav } from "@/components/BottomNav";
+import { JsonLd } from "@/components/JsonLd";
 import { LiveChat } from "@/components/LiveChat";
 import { SiteBackground } from "@/components/SiteBackground";
 import { PageViewTracker } from "@/components/PageViewTracker";
@@ -9,6 +10,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { LoadingScreen } from "@/components/motion/LoadingScreen";
 import { getSettings } from "@/lib/api";
+import { SITE_URL, graph, personSchema, websiteSchema } from "@/lib/seo";
 
 import "./globals.css";
 
@@ -21,20 +23,55 @@ const archivo = localFont({
   fallback: ["Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
   const name = settings.name || "Portfolio";
   const description = settings.tagline || "Selected work, services, and writing.";
 
+  // A Twitter/X profile in the admin socials becomes the attribution on shared
+  // links, which is what makes a card say "by @handle" instead of nothing.
+  const x = (settings.socials ?? []).find((s) => /twitter\.com|x\.com/i.test(s.url ?? ""));
+  const handle = x?.url.replace(/\/+$/, "").split("/").pop();
+
   return {
     metadataBase: new URL(SITE_URL),
     title: { default: name, template: `%s — ${name}` },
     description,
-    openGraph: { title: name, description, type: "website", url: SITE_URL },
-    twitter: { card: "summary_large_image", title: name, description },
-    robots: { index: true, follow: true },
+    applicationName: name,
+    authors: [{ name, url: SITE_URL }],
+    creator: name,
+    publisher: name,
+    alternates: { canonical: "/" },
+    openGraph: {
+      title: name,
+      description,
+      type: "website",
+      url: SITE_URL,
+      siteName: name,
+      locale: "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: name,
+      description,
+      ...(handle && { creator: `@${handle}`, site: `@${handle}` }),
+    },
+    // `max-image-preview: large` is the difference between a thumbnail and a
+    // full-width image in Google results — the single highest-leverage robots
+    // directive for a visual portfolio.
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
+    // Stops iOS Safari turning numbers in project copy into phone links.
+    formatDetection: { telephone: false, address: false, email: false },
   };
 }
 
@@ -62,6 +99,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en" className={`${archivo.variable} no-js`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: BOOTSTRAP }} />
+        {/*
+          One Person and one WebSite node, emitted on every page with the same
+          @id. Repeating identical identifiers is what lets search engines merge
+          them into a single authoritative entity rather than treating each page
+          as describing a different person.
+        */}
+        <JsonLd data={graph(personSchema(settings), websiteSchema(settings))} />
       </head>
       <body className="min-h-dvh flex flex-col">
         <SiteBackground />
