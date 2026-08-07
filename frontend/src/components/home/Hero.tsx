@@ -56,8 +56,11 @@ export function Hero({
                   The full name still carries the page title and metadata.
                   The first "o" becomes a rotating gem; AnimatedLetterText keeps
                   the plain text available to screen readers. */}
+              {/* No placeholder fallback. A stand-in like "Your name" is
+                  indistinguishable from real content to a visitor, so an API
+                  outage used to read as the site being genuinely unfinished. */}
               <AnimatedLetterText
-                text={shortName(settings.name) || "Your name"}
+                text={shortName(settings.name)}
                 letterToReplace="o"
                 id="hero-name"
               />

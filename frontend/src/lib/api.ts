@@ -46,75 +46,61 @@ async function apiGet<T>(path: string, revalidate = REVALIDATE_SECONDS): Promise
 }
 
 /**
- * Fetch that treats an unreachable API as empty content rather than a crash.
+ * Fetch that distinguishes "this record does not exist" from "the API is down".
  *
- * A portfolio should still render its shell if the backend is briefly down —
- * a blank work section is a better failure than a 500 page. A 404 for a specific
- * slug is different and is left to the caller, which turns it into notFound().
+ * Only a 404 becomes null — the caller turns that into notFound(). Every other
+ * failure propagates.
+ *
+ * This used to swallow all errors and return null, so an unreachable backend was
+ * indistinguishable from having no content: the site rendered a placeholder name
+ * and silently dropped every card section. Letting the error through means the
+ * page fails visibly instead of quietly showing something untrue, and — because
+ * these routes render per request — a brief outage shows an error page rather
+ * than being cached as emptiness.
  */
-async function apiGetOrNull<T>(path: string): Promise<T | null> {
+async function apiGetOrNotFound<T>(path: string): Promise<T | null> {
   try {
     return await apiGet<T>(path);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
       return null;
     }
-    console.error(`Failed to load ${path}:`, error);
-    return null;
+    throw error;
   }
 }
 
 export async function getProjects(category?: string): Promise<Project[]> {
   const query = category ? `?category=${encodeURIComponent(category)}` : "";
-  return (await apiGetOrNull<Project[]>(`/api/projects${query}`)) ?? [];
+  return apiGet<Project[]>(`/api/projects${query}`);
 }
 
 export async function getProject(slug: string): Promise<Project | null> {
-  return apiGetOrNull<Project>(`/api/projects/${encodeURIComponent(slug)}`);
+  return apiGetOrNotFound<Project>(`/api/projects/${encodeURIComponent(slug)}`);
 }
 
 export async function getExperience(): Promise<Experience[]> {
-  return (await apiGetOrNull<Experience[]>("/api/experience")) ?? [];
+  return apiGet<Experience[]>("/api/experience");
 }
 
 export async function getPosts(page = 1, tag?: string): Promise<PostList> {
   const params = new URLSearchParams({ page: String(page) });
   if (tag) params.set("tag", tag);
 
-  return (
-    (await apiGetOrNull<PostList>(`/api/posts?${params}`)) ?? {
-      items: [],
-      total: 0,
-      page,
-      per_page: 10,
-    }
-  );
+  return apiGet<PostList>(`/api/posts?${params}`);
 }
 
 export async function getPost(slug: string): Promise<Post | null> {
-  return apiGetOrNull<Post>(`/api/posts/${encodeURIComponent(slug)}`);
+  return apiGetOrNotFound<Post>(`/api/posts/${encodeURIComponent(slug)}`);
 }
 
-const FALLBACK_SETTINGS: SiteSettings = {
-  name: "",
-  greeting: "Hello, I'm",
-  tagline: "",
-  bio_md: "",
-  location: "",
-  email: "",
-  socials: [],
-  resume_media: null,
-  avatar: null,
-};
-
 export async function getSettings(): Promise<SiteSettings> {
-  return (await apiGetOrNull<SiteSettings>("/api/settings")) ?? FALLBACK_SETTINGS;
+  return apiGet<SiteSettings>("/api/settings");
 }
 
 export async function getServices(): Promise<Service[]> {
-  return (await apiGetOrNull<Service[]>("/api/services")) ?? [];
+  return apiGet<Service[]>("/api/services");
 }
 
 export async function getTestimonials(): Promise<Testimonial[]> {
-  return (await apiGetOrNull<Testimonial[]>("/api/testimonials")) ?? [];
+  return apiGet<Testimonial[]>("/api/testimonials");
 }

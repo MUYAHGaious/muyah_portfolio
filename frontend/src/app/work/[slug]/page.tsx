@@ -12,10 +12,9 @@ import { absolute, breadcrumbSchema, graph, projectSchema } from "@/lib/seo";
 
 type Params = { params: Promise<{ slug: string }> };
 
-export async function generateStaticParams() {
-  const projects = await getProjects();
-  return projects.map((project) => ({ slug: project.slug }));
-}
+// No generateStaticParams: the root layout sets `dynamic = "force-dynamic"`, so
+// nothing is prerendered and this would only run at build time — inside `docker
+// build`, where the API container does not exist — and fail the build.
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const project = await getProject((await params).slug);
@@ -24,6 +23,9 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!project) return { title: "Not found", robots: { index: false, follow: false } };
 
   const path = `/work/${project.slug}`;
+  // Falls back to the site-wide card when a project has no cover. Next does NOT
+  // apply the file-based opengraph-image once generateMetadata returns an
+  // openGraph block, so without this an uncovered project unfurls blank.
   const images = project.cover_image
     ? [
         {
@@ -33,7 +35,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
           alt: project.cover_image.alt_text || project.title,
         },
       ]
-    : undefined;
+    : [{ url: absolute("/opengraph-image"), width: 1200, height: 630, alt: project.title }];
 
   return {
     title: project.title,

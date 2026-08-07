@@ -2,7 +2,9 @@ import type { MetadataRoute } from "next";
 
 import { getSettings } from "@/lib/api";
 
-export const revalidate = 3600;
+// Metadata routes do not inherit the root layout's segment config, so the
+// build-time API problem has to be opted out of here as well.
+export const dynamic = "force-dynamic";
 
 /**
  * Makes the site installable and gives Android/Chrome a proper name and colour

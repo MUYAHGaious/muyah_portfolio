@@ -4,10 +4,17 @@ import { getPosts, getProjects } from "@/lib/api";
 import { absolute } from "@/lib/seo";
 
 /**
- * Regenerated on a timer rather than frozen at build time, so anything
- * published from the admin panel appears here without a redeploy.
+ * Built per request, never frozen at build time.
+ *
+ * Metadata routes do not inherit the root layout's segment config, so this must
+ * be declared here too. Without it the sitemap is generated during `docker
+ * build` — where the API container does not exist — which both fails the build
+ * and would otherwise ship a sitemap listing nothing but the six static pages.
+ *
+ * The underlying fetches still carry `next.revalidate`, so this costs one cached
+ * API round trip at most, and only crawlers request it.
  */
-export const revalidate = 600;
+export const dynamic = "force-dynamic";
 
 /**
  * Walks every page of the posts endpoint.

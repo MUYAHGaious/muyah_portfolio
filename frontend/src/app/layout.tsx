@@ -23,6 +23,20 @@ const archivo = localFont({
   fallback: ["Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
 });
 
+/**
+ * Render every page per request rather than prerendering at build time.
+ *
+ * Segment config in the root layout cascades to all routes beneath it, so this
+ * one line covers the whole public site.
+ *
+ * The build runs inside `docker build`, where the API container does not exist.
+ * Prerendering there captured a site with no content and baked it into the
+ * image, which was then served until the first revalidation — the "my name is
+ * missing and the cards are gone" state. Fetches still set `next.revalidate`,
+ * so responses are cached for a minute; only the render moves to request time.
+ */
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
   const name = settings.name || "Portfolio";

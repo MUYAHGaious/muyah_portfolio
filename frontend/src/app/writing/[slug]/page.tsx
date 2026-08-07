@@ -12,10 +12,8 @@ import { absolute, breadcrumbSchema, graph, postSchema } from "@/lib/seo";
 
 type Params = { params: Promise<{ slug: string }> };
 
-export async function generateStaticParams() {
-  const posts = await getPosts(1);
-  return posts.items.map((post) => ({ slug: post.slug }));
-}
+// No generateStaticParams — see the note in work/[slug]/page.tsx. It also only
+// ever covered the first page of posts, so it was never complete anyway.
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const post = await getPost((await params).slug);
@@ -23,6 +21,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
   const path = `/writing/${post.slug}`;
   const settings = await getSettings();
+  // Posts have no cover image of their own, and defining an openGraph block
+  // suppresses the file-based opengraph-image, so name it explicitly.
+  const images = [
+    { url: absolute("/opengraph-image"), width: 1200, height: 630, alt: post.title },
+  ];
 
   return {
     title: post.title,
@@ -41,8 +44,14 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       modifiedTime: post.updated_at ?? undefined,
       authors: [settings.name],
       tags: post.tags,
+      images,
     },
-    twitter: { card: "summary_large_image", title: post.title, description: post.excerpt },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
+      images: images.map((image) => image.url),
+    },
   };
 }
 
