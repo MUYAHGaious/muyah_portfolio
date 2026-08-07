@@ -1,3 +1,10 @@
+# www redirects to the apex so the site has one canonical hostname. Caddy issues
+# a certificate for this name too, which it can only do if www resolves here —
+# keep the www CNAME/A record pointed at this server alongside the apex.
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
+}
+
 {$DOMAIN} {
 	encode zstd gzip
 
