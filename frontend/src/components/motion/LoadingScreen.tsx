@@ -1,48 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
-import { LottieLoader } from "@/components/motion/LottieLoader";
+import { LottieLoader, preloadAnimation } from "@/components/motion/LottieLoader";
 
 /**
- * Intro overlay shown while the first page settles, then faded out for good.
+ * Branded intro overlay.
  *
- * Two rules keep this from becoming an obstacle:
- *  - It only ever appears on the first visit of a session. A preloader on every
- *    navigation is an artificial delay, not polish.
- *  - It is `aria-hidden` and removed from the DOM once gone, so it can never
- *    trap focus or be read out.
+ * Shown on first load and again when arriving at one of the main sections. Those
+ * navigations are real waits — pages render per request, so there is a server
+ * round trip to cover — which is what keeps this from being purely decorative.
  *
- * The page underneath is fully rendered the whole time — if JS fails, nothing
- * here runs and the visitor simply sees the site.
+ * Deliberate choices:
+ *  - A minimum on-screen time, so a fast connection does not reduce it to a
+ *    flicker. Previously the overlay could come and go before it registered.
+ *  - Main sections only. Case studies and posts are reached from those pages and
+ *    would make the overlay feel like an obstacle rather than a transition.
+ *  - Skipped entirely under prefers-reduced-motion, and never focusable or
+ *    announced, so it cannot trap or interrupt assistive technology.
+ *
+ * The page underneath is fully rendered the whole time. If JS never runs, none
+ * of this does either, and the visitor simply sees the site.
  */
-const SESSION_KEY = "intro-shown";
-/**
- * Long enough for the Lottie to fetch and play a beat on a first visit, short
- * enough not to be an obstacle. This is an artificial delay — it is capped
- * deliberately and only ever runs once per session.
- */
-const HOLD_MS = 1600;
+const HOLD_MS = 3000;
 const FADE_MS = 600;
 
+/** Sections that get the intro. Sub-pages deliberately do not. */
+const MAIN_ROUTES = new Set(["/", "/work", "/services", "/writing", "/contact", "/about"]);
+
 export function LoadingScreen({ name }: { name: string }) {
+  const pathname = usePathname();
   const [phase, setPhase] = useState<"hidden" | "visible" | "leaving">("hidden");
+  // Tracks the route the overlay last ran for, so a re-render caused by
+  // something other than navigation cannot retrigger it.
+  const lastShownFor = useRef<string | null>(null);
 
   useEffect(() => {
-    let seen = true;
-    try {
-      seen = sessionStorage.getItem(SESSION_KEY) === "1";
-    } catch {
-      // Storage blocked — treat as already seen so nobody gets it on every page.
-    }
+    if (!MAIN_ROUTES.has(pathname)) return;
+    if (lastShownFor.current === pathname) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    if (seen || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    try {
-      sessionStorage.setItem(SESSION_KEY, "1");
-    } catch {
-      /* non-fatal */
-    }
+    lastShownFor.current = pathname;
 
     setPhase("visible");
     document.body.style.overflow = "hidden";
@@ -51,6 +50,9 @@ export function LoadingScreen({ name }: { name: string }) {
     const done = setTimeout(() => {
       setPhase("hidden");
       document.body.style.overflow = "";
+      // Warm the cache for the next section so the animation starts on frame
+      // one rather than after a fetch.
+      preloadAnimation();
     }, HOLD_MS + FADE_MS);
 
     return () => {
@@ -58,7 +60,7 @@ export function LoadingScreen({ name }: { name: string }) {
       clearTimeout(done);
       document.body.style.overflow = "";
     };
-  }, []);
+  }, [pathname]);
 
   if (phase === "hidden") return null;
 
@@ -72,17 +74,7 @@ export function LoadingScreen({ name }: { name: string }) {
       <div aria-hidden="true" className="glow h-[28rem] w-[28rem]" />
 
       <div className="relative flex flex-col items-center gap-5">
-        {/* The ring doubles as the fallback: it renders immediately, and the
-            Lottie replaces it once the player and animation data have both
-            arrived. If either fails, the ring simply stays. */}
-        <LottieLoader
-          fallback={
-            <span className="relative flex h-14 w-14 items-center justify-center">
-              <span className="absolute inset-0 rounded-full border-2 border-ember [animation:pulse-ring_1.4s_ease-out_infinite]" />
-              <span className="h-3 w-3 rounded-full bg-ember" />
-            </span>
-          }
-        />
+        <LottieLoader />
 
         <span className="text-h4 font-bold tracking-tight text-ink animate-rise">
           {name || "Loading"}

@@ -346,7 +346,7 @@ SETTINGS = {
     "greeting": "Hello, I'm",
     "tagline": "Full-stack engineer building AI-powered products.",
     "location": "Bamenda, Cameroon",
-    "email": "hello@muyah.dev",
+    "email": "contact@muyah.dev",
     "bio_md": (
         "I build production web systems end to end — containerised FastAPI services with "
         "real migrations, TypeScript frontends, and Flutter clients on top.\n\n"
@@ -362,7 +362,7 @@ SETTINGS = {
     "socials": [
         {"label": "GitHub", "url": GITHUB},
         {"label": "LinkedIn", "url": "https://linkedin.com/in/muyah-gaious-angwe-1b5976254"},
-        {"label": "Email", "url": "mailto:hello@muyah.dev"},
+        {"label": "Email", "url": "mailto:contact@muyah.dev"},
     ],
 }
 

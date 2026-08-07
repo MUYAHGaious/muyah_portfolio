@@ -52,7 +52,7 @@ export function ContentUnavailable({ onRetry }: { onRetry: () => void }) {
           {/* mailto rather than a link to /contact — the contact page needs the
               same API that is currently unreachable. */}
           <a
-            href="mailto:hello@muyah.dev"
+            href="mailto:contact@muyah.dev"
             className="rounded-full border border-rule px-6 py-3 text-small font-medium text-ink transition-colors duration-200 hover:bg-surface-2"
           >
             Email instead
