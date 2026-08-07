@@ -72,18 +72,30 @@ curl -sI localhost:3004 | head -1     # HTTP/1.1 200 OK
 
 ## nginx and the certificate
 
-The site file references a certificate that does not exist yet, so install the
-cert first, using the port-80 webroot the other sites already use:
+These steps must run in this order. The full site file names certificate paths
+that do not exist yet, so `nginx -t` would fail if it were installed first — but
+certbot's webroot challenge needs nginx to already answer on port 80 for this
+hostname, or the challenge 404s against the default server. The bootstrap vhost
+exists to break that cycle.
+
+**1. Install the bootstrap vhost and reload:**
+
+```bash
+sudo cp deploy/nginx/muyah.dev.bootstrap.conf /etc/nginx/sites-available/muyah.dev
+sudo ln -sf /etc/nginx/sites-available/muyah.dev /etc/nginx/sites-enabled/muyah.dev
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+**2. Obtain the certificate**, using the webroot the other sites already use:
 
 ```bash
 sudo certbot certonly --webroot -w /var/www/certbot -d muyah.dev -d www.muyah.dev
 ```
 
-Then install the site and reload:
+**3. Swap in the real site file and reload:**
 
 ```bash
 sudo cp deploy/nginx/muyah.dev.conf /etc/nginx/sites-available/muyah.dev
-sudo ln -sf /etc/nginx/sites-available/muyah.dev /etc/nginx/sites-enabled/muyah.dev
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
