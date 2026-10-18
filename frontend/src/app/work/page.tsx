@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/PageHero";
 import { ProjectGrid } from "@/components/ProjectGrid";
 import { SectionHeading } from "@/components/SectionHeading";
-import { WorkShowcase } from "@/components/home/WorkShowcase";
+import { FlagshipCard } from "@/components/home/FlagshipCard";
 import { getProjects } from "@/lib/api";
 
 export const metadata: Metadata = {
@@ -20,44 +20,32 @@ export const metadata: Metadata = {
 
 export default async function WorkPage() {
   const projects = await getProjects();
+  const featured = projects.filter((p) => p.featured);
+  const rest = projects.filter((p) => !p.featured);
   const categories = [...new Set(projects.map((p) => p.category).filter(Boolean))];
 
   return (
     <>
       <PageHero
-        eyebrow="Portfolio"
+        eyebrow={`work · ${projects.length} projects${categories.length ? ` · ${categories.join(", ")}` : ""}`}
         title="Selected work."
-        lead="A few things I've built, with the thinking behind them."
-      >
-        {categories.length > 0 && (
-          <ul className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <li
-                key={category}
-                className="rounded-full bg-surface-2 px-3.5 py-1.5 text-micro normal-case tracking-normal text-ink-soft"
-              >
-                {category}
-              </li>
-            ))}
-          </ul>
-        )}
-      </PageHero>
+        lead="Products I lead, software I built, and research I did. Each one has a case study with the thinking behind it."
+      />
 
-      {/* Expanding panels for the most recent handful, then the full grid.
-          This treatment lives here rather than on the home page, where it
-          would compete with the slider for the same job. */}
-      {projects.length >= 2 && (
+      {featured.length > 0 && (
         <section className="shell pt-12 sm:pt-16">
-          <SectionHeading eyebrow="Most recent" title="Open a panel." />
-          <WorkShowcase projects={projects.slice(0, 4)} />
+          <SectionHeading eyebrow={`flagship · ${featured.length}`} title="Leading." />
+          <div className="space-y-6">
+            {featured.map((project, index) => (
+              <FlagshipCard key={project.id} project={project} flip={index % 2 === 1} />
+            ))}
+          </div>
         </section>
       )}
 
       <section className="shell pt-16 sm:pt-20">
-        {projects.length >= 2 && (
-          <SectionHeading eyebrow="Everything" title="The full index." />
-        )}
-        <ProjectGrid projects={projects} />
+        {rest.length > 0 && <SectionHeading eyebrow={`index · ${rest.length}`} title="Building." />}
+        <ProjectGrid projects={rest} />
       </section>
     </>
   );

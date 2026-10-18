@@ -4,11 +4,11 @@ import localFont from "next/font/local";
 import { BottomNav } from "@/components/BottomNav";
 import { JsonLd } from "@/components/JsonLd";
 import { LiveChat } from "@/components/LiveChat";
+import { MetaPixel } from "@/components/MetaPixel";
 import { SiteBackground } from "@/components/SiteBackground";
 import { PageViewTracker } from "@/components/PageViewTracker";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import { LoadingScreen } from "@/components/motion/LoadingScreen";
 import { getSettings } from "@/lib/api";
 import { SITE_URL, graph, personSchema, websiteSchema } from "@/lib/seo";
 
@@ -21,6 +21,21 @@ const archivo = localFont({
   variable: "--font-archivo",
   display: "swap",
   fallback: ["Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
+});
+
+/* Readouts, neuron labels, numbers. Latin subsets only: it never sets body
+   copy, and the language demo renders its Ge'ez and tone-marked text in the
+   sans, which falls through to system fonts for those scripts. */
+const jetbrains = localFont({
+  src: [
+    { path: "../fonts/JetBrainsMono-Variable-latin.woff2" },
+    { path: "../fonts/JetBrainsMono-Variable-latin-ext.woff2" },
+  ],
+  weight: "400 700",
+  style: "normal",
+  variable: "--font-jetbrains",
+  display: "swap",
+  fallback: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
 });
 
 /**
@@ -90,19 +105,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Runs before first paint.
- *
- * Applies a stored dark preference only — the site defaults to light and never
- * follows the system setting. Also swaps the `no-js` class, which is what makes
+ * Runs before first paint. Swaps the `no-js` class, which is what makes
  * scroll-reveal content visible when JS is unavailable.
  */
 const BOOTSTRAP = `
 (function () {
-  var el = document.documentElement;
-  el.classList.remove("no-js");
-  try {
-    if (localStorage.getItem("theme") === "dark") el.setAttribute("data-theme", "dark");
-  } catch (e) {}
+  document.documentElement.classList.remove("no-js");
 })();
 `;
 
@@ -110,7 +118,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const settings = await getSettings();
 
   return (
-    <html lang="en" className={`${archivo.variable} no-js`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${archivo.variable} ${jetbrains.variable} no-js`}
+      data-theme="dark"
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: BOOTSTRAP }} />
         {/*
@@ -131,9 +144,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           Skip to content
         </a>
 
-        <LoadingScreen name={settings.name} />
-
-        <SiteHeader name={settings.name} location={settings.location} />
+        <SiteHeader name={settings.name} />
         <main id="main" className="flex-1">
           {children}
         </main>
@@ -144,6 +155,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
         <BottomNav />
         <PageViewTracker />
+        <MetaPixel />
         <LiveChat />
       </body>
     </html>

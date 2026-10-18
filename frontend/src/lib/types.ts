@@ -15,6 +15,19 @@ export interface Media {
   srcset: string;
 }
 
+export type ProjectStatus = "live" | "in_build" | "archived";
+
+export interface Metric {
+  label: string;
+  value: string;
+  note: string;
+}
+
+export interface PipelineStage {
+  stage: string;
+  detail: string;
+}
+
 export interface Project {
   id: number;
   slug: string;
@@ -27,6 +40,13 @@ export interface Project {
   tech: string[];
   links: Record<string, string>;
   cover_image: Media | null;
+  status: ProjectStatus;
+  featured: boolean;
+  tldr: string;
+  highlight: string;
+  metrics: Metric[];
+  pipeline: PipelineStage[];
+  team_size: number | null;
   sort_order: number;
   published: boolean;
   created_at: string;
@@ -71,14 +91,29 @@ export interface SocialLink {
   url: string;
 }
 
+export interface Stat {
+  label: string;
+  value: string;
+}
+
+export interface Education {
+  degree: string;
+  school: string;
+  years: string;
+  status: string;
+}
+
 export interface SiteSettings {
   name: string;
   greeting: string;
+  title: string;
   tagline: string;
   bio_md: string;
   location: string;
   email: string;
   socials: SocialLink[];
+  stats: Stat[];
+  education: Education[];
   resume_media: Media | null;
   avatar: Media | null;
 }

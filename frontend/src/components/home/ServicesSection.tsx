@@ -1,21 +1,10 @@
 import { Reveal } from "@/components/motion/Reveal";
-import { GradientCard } from "@/components/ui/gradient-card";
 import type { Service } from "@/lib/types";
 
 /**
- * Services as gradient feature cards.
- *
- * The gradient and badge dot cycle through the warm palette so a row of cards
- * reads as a set rather than a repetition, and the assignment is by index so it
- * stays stable as services are reordered in the admin panel.
+ * Services as three plain columns. No cards, no gradients: a title, a line,
+ * and the points. The hairline between columns is the only structure.
  */
-const PALETTE = [
-  { gradient: "ember" as const, dot: "#E8541A" },
-  { gradient: "sand" as const, dot: "#B08968" },
-  { gradient: "clay" as const, dot: "#C2694A" },
-  { gradient: "moss" as const, dot: "#6E8B5B" },
-];
-
 export function ServicesSection({
   services,
   showPoints = true,
@@ -26,25 +15,23 @@ export function ServicesSection({
   if (services.length === 0) return null;
 
   return (
-    <ul className="grid gap-5 sm:grid-cols-2 lg:gap-6">
-      {services.map((service, index) => {
-        const theme = PALETTE[index % PALETTE.length];
-
-        return (
-          <Reveal as="li" key={service.id} delay={index * 90}>
-            <GradientCard
-              gradient={theme.gradient}
-              badgeColor={theme.dot}
-              badgeText={`0${index + 1} — Service`}
-              title={service.title}
-              description={service.blurb}
-              points={showPoints ? service.points : undefined}
-              ctaText="Start a conversation"
-              ctaHref="/contact"
-            />
-          </Reveal>
-        );
-      })}
+    <ul className="grid gap-px overflow-hidden rounded-[var(--r-lg)] border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+      {services.map((service, index) => (
+        <Reveal as="li" key={service.id} delay={index * 80} className="bg-surface/90 p-6 sm:p-7">
+          <h3 className="text-h4 font-bold tracking-tight text-ink">{service.title}</h3>
+          {service.blurb && <p className="mt-2 text-small text-ink-soft">{service.blurb}</p>}
+          {showPoints && service.points.length > 0 && (
+            <ul className="mt-5 space-y-2">
+              {service.points.map((point) => (
+                <li key={point} className="flex gap-2.5 text-small text-ink-soft">
+                  <span aria-hidden="true" className="mt-[0.55em] h-1.5 w-1.5 shrink-0 rounded-full bg-ember" />
+                  {point}
+                </li>
+              ))}
+            </ul>
+          )}
+        </Reveal>
+      ))}
     </ul>
   );
 }

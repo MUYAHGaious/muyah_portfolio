@@ -1,145 +1,107 @@
 import Link from "next/link";
 
-import { Markdown } from "@/components/Markdown";
 import { ProjectGrid } from "@/components/ProjectGrid";
 import { SectionHeading } from "@/components/SectionHeading";
-import { BentoGrid } from "@/components/home/BentoGrid";
-import { FeaturedSlider } from "@/components/home/FeaturedSlider";
+import { TalkbackReplay } from "@/components/demo/TalkbackReplay";
+import { FlagshipCard, PipelineSketch } from "@/components/home/FlagshipCard";
 import { Hero } from "@/components/home/Hero";
+import { ReadoutStrip } from "@/components/home/ReadoutStrip";
 import { ServicesSection } from "@/components/home/ServicesSection";
-import { Testimonials } from "@/components/home/Testimonials";
-import { Parallax } from "@/components/motion/Parallax";
 import { Reveal } from "@/components/motion/Reveal";
-import { getPosts, getProjects, getServices, getSettings, getTestimonials } from "@/lib/api";
+import { getPosts, getProjects, getServices, getSettings } from "@/lib/api";
 import { fullDate } from "@/lib/format";
 
-const FEATURED = 6;
-
 export default async function HomePage() {
-  const [settings, projects, posts, services, testimonials] = await Promise.all([
+  const [settings, projects, posts, services] = await Promise.all([
     getSettings(),
     getProjects(),
     getPosts(1),
     getServices(),
-    getTestimonials(),
   ]);
 
+  const featured = projects.filter((p) => p.featured);
+  const rest = projects.filter((p) => !p.featured);
   const recent = posts.items.slice(0, 3);
 
   return (
     <>
-      <Hero settings={settings} services={services} projectCount={projects.length} />
+      <Hero settings={settings} />
 
-      {projects.length > 0 && (
+      <ReadoutStrip stats={settings.stats ?? []} />
+
+      {featured.length > 0 && (
         <section className="shell pt-20 sm:pt-28">
           <SectionHeading
-            eyebrow="Selected work"
-            title="Things I've designed and built."
-            lead="Pick one below, or let it run."
+            eyebrow={`flagship · ${featured.length} ${featured.length === 1 ? "product" : "products"}`}
+            title="The work I lead."
+          />
+          <div className="space-y-6">
+            {featured.map((project, index) => (
+              <FlagshipCard
+                key={project.id}
+                project={project}
+                flip={index % 2 === 1}
+                visual={
+                  project.slug === "malegado" ? (
+                    <TalkbackReplay />
+                  ) : (
+                    <PipelineSketch project={project} />
+                  )
+                }
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {rest.length > 0 && (
+        <section className="shell pt-20 sm:pt-28">
+          <SectionHeading
+            eyebrow={`work · ${projects.length} projects`}
+            title="Built with my own hands."
             link={{ href: "/work", label: "All work" }}
           />
-          {/* One featured treatment, not three. The slider carries the top four
-              with room for imagery; the rest fall through to the grid, and the
-              full index at /work uses the grid alone, which scans better at
-              length. */}
-          <FeaturedSlider projects={projects.slice(0, 4)} />
-
-          {projects.length > 4 && (
-            <div className="mt-14">
-              <ProjectGrid projects={projects.slice(4, FEATURED)} />
-            </div>
-          )}
+          <ProjectGrid projects={rest.slice(0, 6)} />
         </section>
       )}
 
       {services.length > 0 && (
         <section className="shell pt-20 sm:pt-28">
           <SectionHeading
-            eyebrow="Services"
+            eyebrow={`services · ${services.length}`}
             title="How I can help."
-            lead="What I take on, and what working together looks like."
             link={{ href: "/services", label: "Details" }}
           />
-          <ServicesSection services={services.slice(0, 3)} />
-        </section>
-      )}
-
-      {settings.bio_md && (
-        <section className="shell pt-20 sm:pt-28">
-          <div className="panel relative overflow-hidden px-6 py-12 sm:px-12 sm:py-16">
-            <div aria-hidden="true" className="glow -left-20 top-1/2 h-72 w-72 -translate-y-1/2" />
-
-            <div className="relative grid gap-10 lg:grid-cols-12 lg:items-center">
-              <Reveal className="lg:col-span-5">
-                <p className="eyebrow">About me</p>
-                <h2 className="mt-2 text-h2 font-bold tracking-tight text-ink">
-                  A bit of background.
-                </h2>
-                <Link
-                  href="/about"
-                  className="group mt-6 inline-flex min-h-9 items-center gap-1.5 text-small font-semibold text-ember-deep"
-                >
-                  Read more
-                  <span
-                    aria-hidden="true"
-                    className="transition-transform duration-200 group-hover:translate-x-1"
-                  >
-                    →
-                  </span>
-                </Link>
-              </Reveal>
-
-              <Reveal className="lg:col-span-7" delay={120}>
-                <Markdown>{settings.bio_md}</Markdown>
-              </Reveal>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {testimonials.length > 0 && (
-        <section className="shell pt-20 sm:pt-28">
-          <SectionHeading eyebrow="Testimonials" title="What people say." />
-          <Testimonials testimonials={testimonials.slice(0, 3)} />
+          <ServicesSection services={services.slice(0, 3)} showPoints={false} />
         </section>
       )}
 
       {recent.length > 0 && (
         <section className="shell pt-20 sm:pt-28">
           <SectionHeading
-            eyebrow="Writing"
-            title="Notes and longer pieces."
+            eyebrow={`writing · ${posts.total}`}
+            title="Notes."
             link={{ href: "/writing", label: "All writing" }}
           />
-
-          <ul className="grid gap-4">
+          <ul className="divide-y divide-line border-y border-line">
             {recent.map((post, index) => (
-              <Reveal as="li" key={post.id} delay={index * 90}>
+              <Reveal as="li" key={post.id} delay={index * 70}>
                 <Link
                   href={`/writing/${post.slug}`}
-                  className="card card-lift group flex flex-col gap-2 p-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+                  className="group flex flex-col gap-1 py-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
                 >
                   <span className="min-w-0">
-                    <span className="block text-h4 font-bold tracking-tight text-ink">
+                    <span className="block text-h4 font-bold tracking-tight text-ink group-hover:text-ember">
                       {post.title}
                     </span>
                     {post.excerpt && (
-                      <span className="mt-1.5 line-clamp-2 block text-small text-ink-soft">
+                      <span className="mt-1 line-clamp-2 block text-small text-ink-soft">
                         {post.excerpt}
                       </span>
                     )}
                   </span>
-
-                  <span className="flex shrink-0 items-center gap-4">
-                    <span className="text-micro normal-case tracking-normal text-ink-faint">
-                      {post.published_at ? fullDate(post.published_at) : "Draft"}
-                    </span>
-                    <span
-                      aria-hidden="true"
-                      className="text-ember-deep transition-transform duration-200 group-hover:translate-x-1"
-                    >
-                      →
-                    </span>
+                  <span className="shrink-0 font-mono text-micro text-ink-faint">
+                    {post.published_at ? fullDate(post.published_at) : "Draft"}
                   </span>
                 </Link>
               </Reveal>
@@ -147,27 +109,6 @@ export default async function HomePage() {
           </ul>
         </section>
       )}
-
-      <section className="shell pt-20 sm:pt-28">
-        <SectionHeading
-          eyebrow="Explore"
-          title="Everything else worth a look."
-          lead="Counted live, so these numbers are always the real ones."
-        />
-        <BentoGrid
-          settings={settings}
-          projectCount={projects.length}
-          postCount={posts.total}
-          serviceCount={services.length}
-        />
-      </section>
-
-      {/* A slow-moving band of warm light: the parallax layer, purely decorative. */}
-      <div aria-hidden="true" className="relative h-24 overflow-hidden sm:h-32">
-        <Parallax speed={0.22} className="absolute inset-x-0 top-0 flex justify-center">
-          <div className="glow h-56 w-[36rem] opacity-40" />
-        </Parallax>
-      </div>
     </>
   );
 }

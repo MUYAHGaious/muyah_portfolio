@@ -26,6 +26,18 @@ class Project(Base):
     tech: Mapped[list[str]] = mapped_column(JSONType, default=list)
     links: Mapped[dict[str, Any]] = mapped_column(JSONType, default=dict)
 
+    # Showcase fields. status is one of live / in_build / archived (validated
+    # in the schema); featured projects lead the home page and the work index.
+    status: Mapped[str] = mapped_column(String(20), default="live", index=True)
+    featured: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    tldr: Mapped[str] = mapped_column(Text, default="")
+    highlight: Mapped[str] = mapped_column(String(200), default="")
+    # [{"label": "languages", "value": "590+", "note": "..."}]
+    metrics: Mapped[list[dict[str, Any]]] = mapped_column(JSONType, default=list)
+    # Ordered stages for the pipeline diagram: [{"stage": "Collect", "detail": "..."}]
+    pipeline: Mapped[list[dict[str, Any]]] = mapped_column(JSONType, default=list)
+    team_size: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
     cover_image_id: Mapped[int | None] = mapped_column(
         ForeignKey("media.id", ondelete="SET NULL"), nullable=True
     )

@@ -1,5 +1,6 @@
 "use client";
 
+import { trackLead } from "@/components/MetaPixel";
 import { useRef, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
@@ -40,6 +41,7 @@ export function ContactForm() {
 
       if (response.ok) {
         setStatus("sent");
+        trackLead();
         return;
       }
 

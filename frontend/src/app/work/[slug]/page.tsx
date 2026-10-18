@@ -4,7 +4,10 @@ import { notFound } from "next/navigation";
 
 import { JsonLd } from "@/components/JsonLd";
 import { Markdown } from "@/components/Markdown";
-import { Parallax } from "@/components/motion/Parallax";
+import { StatusChip } from "@/components/StatusChip";
+import { ToConfirm } from "@/components/ToConfirm";
+import { PipelineDiagram } from "@/components/casestudy/PipelineDiagram";
+import { TalkbackReplay } from "@/components/demo/TalkbackReplay";
 import { Reveal } from "@/components/motion/Reveal";
 import { Button } from "@/components/ui/Button";
 import { getProject, getProjects, getSettings } from "@/lib/api";
@@ -13,19 +16,14 @@ import { absolute, breadcrumbSchema, graph, projectSchema } from "@/lib/seo";
 type Params = { params: Promise<{ slug: string }> };
 
 // No generateStaticParams: the root layout sets `dynamic = "force-dynamic"`, so
-// nothing is prerendered and this would only run at build time — inside `docker
-// build`, where the API container does not exist — and fail the build.
+// nothing is prerendered and this would only run at build time, inside `docker
+// build`, where the API container does not exist.
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const project = await getProject((await params).slug);
-  // A missing project must not be indexable — otherwise every mistyped URL
-  // becomes a thin page competing with the real ones.
   if (!project) return { title: "Not found", robots: { index: false, follow: false } };
 
   const path = `/work/${project.slug}`;
-  // Falls back to the site-wide card when a project has no cover. Next does NOT
-  // apply the file-based opengraph-image once generateMetadata returns an
-  // openGraph block, so without this an uncovered project unfurls blank.
   const images = project.cover_image
     ? [
         {
@@ -54,12 +52,17 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       card: "summary_large_image",
       title: project.title,
       description: project.summary,
-      ...(images && { images: images.map((image) => image.url) }),
+      images: images.map((image) => image.url),
     },
   };
 }
 
-const LINK_LABELS: Record<string, string> = { live: "Visit site", repo: "Source code" };
+const LINK_LABELS: Record<string, string> = {
+  live: "Visit the product",
+  repo: "Source code",
+  app_store: "App Store",
+  play_store: "Google Play",
+};
 
 export default async function ProjectPage({ params }: Params) {
   const { slug } = await params;
@@ -72,6 +75,7 @@ export default async function ProjectPage({ params }: Params) {
 
   const links = Object.entries(project.links).filter(([, url]) => url);
   const others = all.filter((item) => item.slug !== project.slug).slice(0, 3);
+  const header = [project.year, project.title, project.role].filter(Boolean).join(" · ");
 
   return (
     <article>
@@ -85,53 +89,36 @@ export default async function ProjectPage({ params }: Params) {
           ]),
         )}
       />
-      <section className="shell pt-3">
-        <div className="panel relative overflow-hidden px-6 py-12 sm:px-12 sm:py-16">
-          <div aria-hidden="true" className="glow -top-24 right-0 h-80 w-80" />
 
-          <div className="relative grid gap-8 lg:grid-cols-12">
-            <div className="lg:col-span-7">
-              <div className="flex flex-wrap items-center gap-2.5 animate-rise">
-                {project.year && (
-                  <span className="rounded-full bg-surface-2 px-3 py-1 text-micro font-semibold text-ink-soft">
-                    {project.year}
-                  </span>
-                )}
-                {project.category && (
-                  <span className="rounded-full bg-ember/15 px-3 py-1 text-micro font-semibold text-ember-deep">
-                    {project.category}
-                  </span>
-                )}
-              </div>
+      <section className="shell pt-8 sm:pt-14">
+        <div className="border-b border-line pb-10 sm:pb-14">
+          <div className="flex flex-wrap items-center gap-3 animate-rise">
+            <p className="readout flex-1">{header}</p>
+            <StatusChip status={project.status} />
+          </div>
 
+          <div className="mt-6 grid gap-8 lg:grid-cols-12">
+            <div className="lg:col-span-8">
               <h1
-                className="mt-4 text-h1 font-bold tracking-tight text-ink animate-rise"
-                style={{ animationDelay: "100ms", fontSize: "clamp(2.25rem, 5vw, 4.25rem)" }}
+                className="text-h1 font-bold tracking-tight text-ink animate-rise"
+                style={{ animationDelay: "100ms" }}
               >
-                {project.title}
+                {project.highlight || project.title}
               </h1>
 
-              {project.summary && (
+              {project.tldr && (
                 <p
-                  className="mt-4 max-w-[52ch] text-lead text-ink-soft animate-rise"
+                  className="mt-6 max-w-[60ch] text-lead text-ink-soft animate-rise"
                   style={{ animationDelay: "180ms" }}
                 >
-                  {project.summary}
+                  <ToConfirm text={project.tldr} />
                 </p>
               )}
 
               {links.length > 0 && (
-                <div
-                  className="mt-7 flex flex-wrap gap-3 animate-rise"
-                  style={{ animationDelay: "260ms" }}
-                >
+                <div className="mt-7 flex flex-wrap gap-3 animate-rise" style={{ animationDelay: "260ms" }}>
                   {links.map(([key, url]) => (
-                    <Button
-                      key={key}
-                      href={url}
-                      external
-                      variant={key === "live" ? "ember" : "ghost"}
-                    >
+                    <Button key={key} href={url} external variant={key === "live" ? "ember" : "ghost"}>
                       {LINK_LABELS[key] ?? key}
                     </Button>
                   ))}
@@ -140,23 +127,23 @@ export default async function ProjectPage({ params }: Params) {
             </div>
 
             <dl
-              className="lg:col-span-4 lg:col-start-9 animate-rise"
+              className="space-y-5 lg:col-span-3 lg:col-start-10 animate-rise"
               style={{ animationDelay: "320ms" }}
             >
-              {project.role && (
-                <div className="border-b border-line pb-4">
-                  <dt className="eyebrow">Role</dt>
-                  <dd className="mt-1.5 text-small text-ink">{project.role}</dd>
+              {project.team_size && (
+                <div>
+                  <dt className="eyebrow">team</dt>
+                  <dd className="mt-1 text-small text-ink">{project.team_size} people</dd>
                 </div>
               )}
               {project.tech.length > 0 && (
-                <div className="pt-4">
-                  <dt className="eyebrow">Built with</dt>
+                <div>
+                  <dt className="eyebrow">built with</dt>
                   <dd className="mt-2 flex flex-wrap gap-1.5">
                     {project.tech.map((tech) => (
                       <span
                         key={tech}
-                        className="rounded-full bg-surface-2 px-2.5 py-1 text-micro normal-case tracking-normal text-ink-soft"
+                        className="rounded-full border border-line px-2.5 py-1 font-mono text-micro text-ink-soft"
                       >
                         {tech}
                       </span>
@@ -169,22 +156,71 @@ export default async function ProjectPage({ params }: Params) {
         </div>
       </section>
 
-      {project.cover_image && (
-        <section className="shell pt-6 sm:pt-8">
+      {project.metrics.length > 0 && (
+        <section className="shell pt-10 sm:pt-14">
           <Reveal>
-            <div className="overflow-hidden rounded-[var(--r-lg)] shadow-card">
-              <Parallax speed={0.05}>
-                <img
-                  src={project.cover_image.url}
-                  srcSet={project.cover_image.srcset}
-                  sizes="(min-width: 82rem) 76rem, 95vw"
-                  alt={project.cover_image.alt_text}
-                  width={project.cover_image.width}
-                  height={project.cover_image.height}
-                  className="w-full"
-                />
-              </Parallax>
+            <dl className="grid gap-px overflow-hidden rounded-[var(--r-lg)] border border-line bg-line sm:grid-cols-3">
+              {project.metrics.map((metric) => (
+                <div key={metric.label} className="bg-surface/90 px-5 py-5">
+                  <dd className="text-h3 font-bold tracking-tight text-ink">
+                    <ToConfirm text={metric.value} />
+                  </dd>
+                  <dt className="mt-1 text-small text-ink-soft">{metric.label}</dt>
+                  {metric.note && (
+                    <p className="mt-1 text-micro text-ink-faint">
+                      <ToConfirm text={metric.note} />
+                    </p>
+                  )}
+                </div>
+              ))}
+            </dl>
+          </Reveal>
+        </section>
+      )}
+
+      {project.slug === "malegado" && (
+        <section className="shell pt-10 sm:pt-14">
+          <Reveal className="grid gap-6 lg:grid-cols-12">
+            <div className="lg:col-span-5">
+              <p className="readout">talk-back</p>
+              <h2 className="mt-4 text-h3 font-bold tracking-tight text-ink">
+                Speak, and be answered out loud.
+              </h2>
+              <p className="mt-3 text-small text-ink-soft">
+                A replay of a real exchange. The stage indicator shows which part of the
+                loop is active: speech in, speech to text, the text model, text to speech.
+              </p>
             </div>
+            <div className="lg:col-span-7">
+              <TalkbackReplay />
+            </div>
+          </Reveal>
+        </section>
+      )}
+
+      {project.pipeline.length > 0 && (
+        <section className="shell pt-14 sm:pt-20">
+          <Reveal>
+            <p className="readout">pipeline · {project.pipeline.length} stages</p>
+            <div className="mt-5">
+              <PipelineDiagram stages={project.pipeline} />
+            </div>
+          </Reveal>
+        </section>
+      )}
+
+      {project.cover_image && (
+        <section className="shell pt-10 sm:pt-14">
+          <Reveal>
+            <img
+              src={project.cover_image.url}
+              srcSet={project.cover_image.srcset}
+              sizes="(min-width: 82rem) 76rem, 95vw"
+              alt={project.cover_image.alt_text}
+              width={project.cover_image.width}
+              height={project.cover_image.height}
+              className="w-full rounded-[var(--r-lg)] border border-line"
+            />
           </Reveal>
         </section>
       )}
@@ -199,28 +235,25 @@ export default async function ProjectPage({ params }: Params) {
 
       {others.length > 0 && (
         <section className="shell pt-20 sm:pt-28">
-          <Reveal className="mb-8">
-            <p className="eyebrow">Next</p>
-            <h2 className="mt-2 text-h2 font-bold tracking-tight text-ink">More work.</h2>
+          <Reveal className="mb-6">
+            <p className="readout">more work</p>
           </Reveal>
-
           <ul className="grid gap-4 sm:grid-cols-3">
             {others.map((other, index) => (
-              <Reveal as="li" key={other.id} delay={index * 90}>
+              <Reveal as="li" key={other.id} delay={index * 70}>
                 <Link
                   href={`/work/${other.slug}`}
                   className="card card-lift group flex h-full flex-col justify-between gap-4 p-6"
                 >
-                  <span className="text-h4 font-bold tracking-tight text-ink">{other.title}</span>
-                  <span className="inline-flex items-center gap-1.5 text-small font-semibold text-ember-deep">
-                    View
-                    <span
-                      aria-hidden="true"
-                      className="transition-transform duration-200 group-hover:translate-x-1"
-                    >
-                      →
+                  <span>
+                    <span className="block text-h4 font-bold tracking-tight text-ink group-hover:text-ember">
+                      {other.title}
                     </span>
+                    {other.highlight && (
+                      <span className="mt-1.5 block text-small text-ink-soft">{other.highlight}</span>
+                    )}
                   </span>
+                  <StatusChip status={other.status} className="self-start" />
                 </Link>
               </Reveal>
             ))}

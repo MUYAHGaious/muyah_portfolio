@@ -161,3 +161,53 @@ async def test_updating_a_missing_record_is_a_404(admin_client):
     assert (
         await admin_client.patch("/api/admin/projects/9999", json={"title": "Nope"})
     ).status_code == 404
+
+
+async def test_showcase_fields_round_trip_to_the_public_api(admin_client):
+    payload = {
+        "title": "Malegado",
+        "published": True,
+        "status": "in_build",
+        "featured": True,
+        "tldr": "Three sentences.",
+        "highlight": "590 languages through one pipeline",
+        "metrics": [{"label": "languages", "value": "590+", "note": "and growing"}],
+        "pipeline": [{"stage": "Collect", "detail": "phrases per language"}],
+        "team_size": 6,
+    }
+    created = (await admin_client.post("/api/admin/projects", json=payload)).json()
+    assert created["status"] == "in_build"
+    assert created["metrics"][0]["note"] == "and growing"
+
+    public = (await admin_client.get("/api/projects/malegado")).json()
+    assert public["featured"] is True
+    assert public["pipeline"] == [{"stage": "Collect", "detail": "phrases per language"}]
+    assert public["team_size"] == 6
+    assert public["highlight"] == "590 languages through one pipeline"
+
+
+async def test_unknown_project_status_is_rejected(admin_client):
+    response = await admin_client.post(
+        "/api/admin/projects", json={"title": "Bad status", "status": "bogus"}
+    )
+    assert response.status_code == 422
+
+
+async def test_settings_title_stats_and_education_round_trip(admin_client):
+    response = await admin_client.patch(
+        "/api/admin/settings",
+        json={
+            "title": "AI Department Lead, Skye8",
+            "stats": [{"label": "languages", "value": "590+"}],
+            "education": [
+                {"degree": "B.Eng Computer Engineering", "school": "NAHPI", "years": "2026"}
+            ],
+        },
+    )
+    assert response.status_code == 200
+
+    public = (await admin_client.get("/api/settings")).json()
+    assert public["title"] == "AI Department Lead, Skye8"
+    assert public["stats"] == [{"label": "languages", "value": "590+"}]
+    assert public["education"][0]["school"] == "NAHPI"
+    assert public["education"][0]["status"] == ""

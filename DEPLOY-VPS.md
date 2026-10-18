@@ -107,7 +107,7 @@ here.
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.vps.yml exec api \
-  python -m app.scripts.seed_content
+  python -m app.scripts.seed_content --force   # replaces content with the current seed
 ```
 
 Then log in at `https://muyah.dev/admin` with the `ADMIN_EMAIL` and

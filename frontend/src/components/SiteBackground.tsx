@@ -1,25 +1,28 @@
-import { GradientBackground } from "@/components/ui/vermilion-rings";
-
 /**
- * The vermilion rings, behind the whole site.
+ * A faint grid of points behind the whole site.
  *
- * Fixed rather than scrolled, so the rings stay put while content moves over
- * them — the panels then read as floating on a warm field instead of dragging a
- * pattern along with them.
+ * The home page draws a live neural network in its hero; inner pages get this
+ * still echo of it: the same neuron-dot rhythm, no fibres, almost invisible.
+ * Fixed so content moves over it, and a radial mask keeps it away from the
+ * edges where it would compete with text.
  *
- * Opacity is the whole balancing act. The bands are fully saturated orange at
- * source; the site's body copy sits directly on this in a few places, so it is
- * held at a level where the rings are clearly visible but text keeps its
- * contrast. Dark mode drops much lower, where bright orange would otherwise
- * glare against near-black.
+ * Pure CSS: no image request, no canvas, nothing to keep in sync with the
+ * palette. The dot colour is the positive-weight cyan at very low alpha.
  */
 export function SiteBackground() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 -z-10 opacity-[0.55] dark:opacity-[0.18]"
-    >
-      <GradientBackground className="h-full w-full" />
-    </div>
+      className="pointer-events-none fixed inset-0 -z-10"
+      style={{
+        backgroundImage:
+          "radial-gradient(circle at center, color-mix(in srgb, var(--ember) 28%, transparent) 1px, transparent 1.5px)",
+        backgroundSize: "28px 28px",
+        maskImage:
+          "radial-gradient(ellipse 70% 60% at 50% 35%, rgba(0,0,0,0.55) 0%, transparent 100%)",
+        WebkitMaskImage:
+          "radial-gradient(ellipse 70% 60% at 50% 35%, rgba(0,0,0,0.55) 0%, transparent 100%)",
+      }}
+    />
   );
 }

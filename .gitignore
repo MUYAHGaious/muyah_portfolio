@@ -40,3 +40,8 @@ Thumbs.db
 # Test artifacts
 playwright-report/
 test-results/
+.superpowers/
+backend/dev.db
+backend/dev-uploads/
+.playwright-mcp/
+frontend/.playwright-mcp/

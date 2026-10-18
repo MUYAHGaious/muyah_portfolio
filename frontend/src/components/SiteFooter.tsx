@@ -65,27 +65,24 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
 
   return (
     <footer className="relative mt-20 w-full overflow-hidden border-t border-line">
-      {/* Call to action, kept above the decorative block. */}
+      {/* Call to action. */}
       <div className="shell relative z-10 pt-16">
-        <div className="panel relative overflow-hidden px-6 py-12 text-center sm:px-12 sm:py-14">
-          <div aria-hidden="true" className="glow -top-24 left-1/2 h-72 w-72 -translate-x-1/2" />
-
-          <div className="relative">
-            <p className="eyebrow">Got something in mind?</p>
-            <h2 className="mx-auto mt-3 max-w-[18ch] text-h2 font-bold tracking-tight text-ink">
-              Let&apos;s build it together.
+        <div className="grid gap-6 border-b border-line pb-14 lg:grid-cols-12 lg:items-end">
+          <div className="lg:col-span-8">
+            <p className="readout">contact</p>
+            <h2 className="mt-4 max-w-[20ch] text-h2 font-bold tracking-tight text-ink">
+              Hiring for AI, or building something that needs it?
             </h2>
-
-            <div className="mt-7 flex flex-wrap justify-center gap-3">
-              <Button href="/contact" variant="ember">
-                Start a conversation
+          </div>
+          <div className="flex flex-wrap gap-3 lg:col-span-4 lg:justify-end">
+            <Button href="/contact" variant="ember">
+              Start a conversation
+            </Button>
+            {settings.email && (
+              <Button href={`mailto:${settings.email}`} variant="ghost" external>
+                {settings.email}
               </Button>
-              {settings.email && (
-                <Button href={`mailto:${settings.email}`} variant="ghost" external>
-                  {settings.email}
-                </Button>
-              )}
-            </div>
+            )}
           </div>
         </div>
       </div>

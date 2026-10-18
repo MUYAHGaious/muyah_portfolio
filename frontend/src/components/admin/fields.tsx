@@ -91,6 +91,85 @@ export function ListInput({
   );
 }
 
+export function Select({
+  options,
+  ...props
+}: React.SelectHTMLAttributes<HTMLSelectElement> & {
+  options: { value: string; label: string }[];
+}) {
+  return (
+    <select {...props} className={`${INPUT} ${props.className ?? ""}`}>
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+/**
+ * A small editable table for JSON list fields (metrics, pipeline stages,
+ * stats, education). Every row is the same shape; columns say which keys to
+ * show. Rows with nothing filled in are dropped by the caller on save.
+ */
+export function RowsInput<T extends Record<string, string>>({
+  value,
+  onChange,
+  columns,
+  empty,
+  max,
+}: {
+  value: T[];
+  onChange: (value: T[]) => void;
+  columns: { key: keyof T & string; label: string; width?: string }[];
+  empty: T;
+  max: number;
+}) {
+  function setCell(index: number, key: keyof T & string, cell: string) {
+    onChange(value.map((row, i) => (i === index ? { ...row, [key]: cell } : row)));
+  }
+
+  return (
+    <div className="space-y-2">
+      {value.length === 0 && (
+        <p className="text-micro text-ink-faint">Nothing yet. Add a row to start.</p>
+      )}
+      {value.map((row, index) => (
+        <div key={index} className="flex items-start gap-2">
+          {columns.map((column) => (
+            <input
+              key={column.key}
+              value={row[column.key] ?? ""}
+              placeholder={column.label}
+              aria-label={`${column.label}, row ${index + 1}`}
+              onChange={(event) => setCell(index, column.key, event.target.value)}
+              className={`${INPUT} ${column.width ?? "flex-1"}`}
+            />
+          ))}
+          <button
+            type="button"
+            aria-label={`Remove row ${index + 1}`}
+            onClick={() => onChange(value.filter((_, i) => i !== index))}
+            className="shrink-0 border border-field px-3 py-2 text-small text-ink-soft hover:border-ink hover:text-ink"
+          >
+            ×
+          </button>
+        </div>
+      ))}
+      {value.length < max && (
+        <button
+          type="button"
+          onClick={() => onChange([...value, { ...empty }])}
+          className="border border-field px-3 py-1.5 text-small text-ink-soft hover:border-ink hover:text-ink"
+        >
+          Add row
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function Button({
   variant = "secondary",
   ...props

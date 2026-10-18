@@ -40,7 +40,7 @@ on start, and Caddy handles the certificate.
 cd backend
 python -m venv .venv && .venv/Scripts/activate   # or source .venv/bin/activate
 pip install -r requirements-dev.txt
-pytest                                            # 85 tests, no database needed
+pytest                                            # 109 tests, no database needed
 uvicorn app.main:app --reload
 ```
 
@@ -78,15 +78,37 @@ docs/       Design spec
 
 ## Design
 
-Swiss/International Typographic Style: one grotesque (Archivo) at several
-weights rather than a display/body pair, a pure white ground, hairline rules as
-the only structural device, and red used exclusively for functional signals —
-current state, focus, links on hover. If red appears, it means something.
+The site is built around a neural network drawn the way an engineer draws one:
+a deep navy field, neurons as points, weights as fibres that are cyan when
+positive and magenta when negative. The network on the home page is real. It
+is a small language-identification model (256 hashed character n-grams, two
+tanh layers, eight languages) trained by `backend/app/scripts/train_langid.py`
+and run in the visitor's browser by `frontend/src/lib/langid.ts`. Typing a
+phrase forward-propagates it through the rendered network and lights up the
+path to the answer. The weights file lives at
+`frontend/public/models/langid-v1.json`; `node frontend/scripts/check-langid.mjs`
+checks the TypeScript forward pass against the Python one.
 
-The work index is set as a typographic table keyed by year, with a hover
-preview, rather than the usual card grid. Dark mode inverts the palette. All
-motion is opacity and transform only, and disabled under
-`prefers-reduced-motion`.
+Type is Archivo for text and JetBrains Mono for readouts (layer names, neuron
+ids, counts, status). Dark only. Amber is reserved for the "in build" status.
+All motion is opacity and transform plus the WebGL field, and everything
+collapses under `prefers-reduced-motion`; without WebGL the classifier still
+answers over a still image.
+
+Copy that still needs a fact from the owner carries the literal marker
+`[to confirm]`, which renders as an amber flag. Search the site for it before
+launch.
+
+### Optional integrations
+
+- **Contact notifications.** Set `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD`,
+  `SMTP_FROM` and `CONTACT_TO_EMAIL` in `.env`. Every contact submission is
+  stored and, when SMTP is configured, emailed in full with the visitor's
+  address as Reply-To. Messages are never lost when mail fails.
+- **Meta Pixel.** Set `NEXT_PUBLIC_META_PIXEL_ID` at build time to load the
+  Facebook/Meta Pixel. It records page views and a `Lead` event on contact
+  submissions so ads can be measured and retargeted. It is off until set, and
+  is not loaded for browsers that send Global Privacy Control.
 
 ## Security notes
 

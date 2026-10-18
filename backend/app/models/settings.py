@@ -28,6 +28,15 @@ class SiteSettings(Base):
     # Short line above the name in the hero, e.g. "Hello, I'm".
     greeting: Mapped[str] = mapped_column(String(100), default="Hello, I'm")
 
+    # Role line, e.g. "AI Engineer, AI Department Lead at Skye8".
+    title: Mapped[str] = mapped_column(String(200), default="")
+
+    # [{"label": "languages in the pipeline", "value": "590+"}]
+    stats: Mapped[list[dict[str, Any]]] = mapped_column(JSONType, default=list)
+
+    # [{"degree": "B.Eng ...", "school": "...", "years": "2021-2026", "status": ""}]
+    education: Mapped[list[dict[str, Any]]] = mapped_column(JSONType, default=list)
+
     resume_media_id: Mapped[int | None] = mapped_column(
         ForeignKey("media.id", ondelete="SET NULL"), nullable=True
     )

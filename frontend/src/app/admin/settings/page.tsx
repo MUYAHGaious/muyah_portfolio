@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { Button, Field, Notice, TextArea, TextInput } from "@/components/admin/fields";
+import { Button, Field, Notice, RowsInput, TextArea, TextInput } from "@/components/admin/fields";
 import { MarkdownEditor } from "@/components/admin/MarkdownEditor";
 import { MediaPicker } from "@/components/admin/MediaPicker";
 import { EditorSkeleton } from "@/components/admin/EditorSkeleton";
@@ -44,7 +44,10 @@ export default function SettingsPage() {
       await api.patch<SiteSettings>("/admin/settings", {
         name: draft.name,
         greeting: draft.greeting,
+        title: draft.title,
         tagline: draft.tagline,
+        stats: draft.stats.filter((s) => s.label.trim() && s.value.trim()),
+        education: draft.education.filter((e) => e.degree.trim() && e.school.trim()),
         bio_md: draft.bio_md,
         location: draft.location,
         email: draft.email,
@@ -95,15 +98,15 @@ export default function SettingsPage() {
           </Field>
         </div>
 
-        <Field label="Greeting" hint="Small line above your name in the hero, e.g. “Hello, I'm”.">
+        <Field label="Role line" hint="Small line above the headline, e.g. your title and company.">
           <TextInput
-            value={draft.greeting}
-            maxLength={100}
-            onChange={(event) => update("greeting", event.target.value)}
+            value={draft.title}
+            maxLength={200}
+            onChange={(event) => update("title", event.target.value)}
           />
         </Field>
 
-        <Field label="Tagline" hint="One line under your name on the home page.">
+        <Field label="Headline" hint="The large statement on the home page.">
           <TextArea
             rows={2}
             maxLength={300}
@@ -112,8 +115,36 @@ export default function SettingsPage() {
           />
         </Field>
 
+        <Field label="Stats" hint="Shown as a strip under the hero. Up to six. Keep them true.">
+          <RowsInput
+            value={draft.stats}
+            onChange={(value) => update("stats", value)}
+            columns={[
+              { key: "value", label: "Value", width: "w-28" },
+              { key: "label", label: "Label" },
+            ]}
+            empty={{ label: "", value: "" }}
+            max={6}
+          />
+        </Field>
+
+        <Field label="Education" hint="Most recent first.">
+          <RowsInput
+            value={draft.education}
+            onChange={(value) => update("education", value)}
+            columns={[
+              { key: "degree", label: "Degree" },
+              { key: "school", label: "School" },
+              { key: "years", label: "Years", width: "w-32" },
+              { key: "status", label: "Status", width: "w-32" },
+            ]}
+            empty={{ degree: "", school: "", years: "", status: "" }}
+            max={6}
+          />
+        </Field>
+
         <MediaPicker
-          label="Portrait (hero photo)"
+          label="Portrait (about page photo)"
           value={draft.avatar?.id ?? null}
           onChange={(mediaId) =>
             update("avatar", mediaId === null ? null : ({ id: mediaId } as never))

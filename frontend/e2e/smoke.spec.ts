@@ -69,11 +69,11 @@ test.describe("public site", () => {
   test("contact form submits and confirms", async ({ page }) => {
     await page.goto("/contact");
 
-    await page.getByLabel("Your name").fill("Playwright Test");
-    await page.getByLabel("Email", { exact: true }).fill("playwright@example.com");
-    await page
-      .getByLabel("Message")
-      .fill("This message was sent by the end-to-end smoke test.");
+    // Scoped to the form: the footer's social icon is also labelled "Email".
+    const form = page.locator("form");
+    await form.getByLabel("Your name").fill("Playwright Test");
+    await form.getByLabel("Email", { exact: true }).fill("playwright@example.com");
+    await form.getByLabel("Message").fill("This message was sent by the end-to-end smoke test.");
 
     // The API rejects submissions faster than 2s as bot traffic.
     await page.waitForTimeout(2500);
@@ -89,15 +89,22 @@ test.describe("public site", () => {
     await expect(confirmed.or(rateLimited).first()).toBeVisible({ timeout: 10_000 });
   });
 
-  test("theme toggle switches and persists", async ({ page }) => {
+  test("the hero's language model answers in the browser", async ({ page }) => {
     await page.goto("/");
 
-    await page.getByRole("button", { name: /Switch to .* mode/ }).click();
-    const chosen = await page.locator("html").getAttribute("data-theme");
-    expect(chosen).toMatch(/light|dark/);
+    const input = page.locator("#langid");
+    await expect(input).toBeEnabled({ timeout: 15_000 });
 
-    await page.reload();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", chosen!);
+    await input.fill("ina kwana, yaya aiki");
+    await input.press("Enter");
+    // The classifier runs in the browser with no network request, so the
+    // answer should be immediate. Hausa is the expected label for this phrase.
+    await expect(page.locator("output[for='langid']")).toContainText("Hausa", { timeout: 5_000 });
+  });
+
+  test("the site is dark by default", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   });
 });
 
@@ -117,8 +124,9 @@ test.describe("admin", () => {
   test("signing in reveals the panel, and a new project appears on the site", async ({ page }) => {
     await page.goto("/admin");
 
-    await page.getByLabel("Email").fill(ADMIN_EMAIL);
-    await page.getByLabel("Password").fill(ADMIN_PASSWORD);
+    const login = page.locator("form");
+    await login.getByLabel("Email").fill(ADMIN_EMAIL);
+    await login.getByLabel("Password").fill(ADMIN_PASSWORD);
     await page.getByRole("button", { name: "Sign in" }).click();
 
     await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();
@@ -146,8 +154,9 @@ test.describe("admin", () => {
 
   test("signing out ends the session", async ({ page }) => {
     await page.goto("/admin");
-    await page.getByLabel("Email").fill(ADMIN_EMAIL);
-    await page.getByLabel("Password").fill(ADMIN_PASSWORD);
+    const login = page.locator("form");
+    await login.getByLabel("Email").fill(ADMIN_EMAIL);
+    await login.getByLabel("Password").fill(ADMIN_PASSWORD);
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();
 

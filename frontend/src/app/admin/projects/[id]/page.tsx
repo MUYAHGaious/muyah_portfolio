@@ -10,6 +10,8 @@ import {
   Field,
   ListInput,
   Notice,
+  RowsInput,
+  Select,
   TextArea,
   TextInput,
 } from "@/components/admin/fields";
@@ -57,6 +59,13 @@ export default function ProjectEditor() {
         tech: draft.tech,
         links: draft.links,
         cover_image_id: draft.cover_image?.id ?? null,
+        status: draft.status,
+        featured: draft.featured,
+        tldr: draft.tldr,
+        highlight: draft.highlight,
+        metrics: draft.metrics.filter((m) => m.label.trim() && m.value.trim()),
+        pipeline: draft.pipeline.filter((p) => p.stage.trim()),
+        team_size: draft.team_size,
         sort_order: draft.sort_order,
         published: draft.published,
       });
@@ -142,6 +151,80 @@ export default function ProjectEditor() {
             />
           </Field>
         </div>
+
+        <div className="grid gap-6 sm:grid-cols-3">
+          <Field label="Status" hint="In build shows an amber marker and hides screenshots.">
+            <Select
+              value={draft.status}
+              onChange={(event) => update("status", event.target.value as Project["status"])}
+              options={[
+                { value: "live", label: "Live" },
+                { value: "in_build", label: "In build" },
+                { value: "archived", label: "Archived" },
+              ]}
+            />
+          </Field>
+          <Field label="Team size" hint="People who worked on it, if you want it shown.">
+            <TextInput
+              type="number"
+              min={1}
+              value={draft.team_size ?? ""}
+              onChange={(event) =>
+                update("team_size", event.target.value ? Number(event.target.value) : null)
+              }
+            />
+          </Field>
+          <div className="flex items-end pb-2">
+            <Checkbox
+              label="Featured on the home page"
+              checked={draft.featured}
+              onChange={(value) => update("featured", value)}
+            />
+          </div>
+        </div>
+
+        <Field label="Highlight" hint="The one-line fact a visitor should remember.">
+          <TextInput
+            maxLength={200}
+            value={draft.highlight}
+            onChange={(event) => update("highlight", event.target.value)}
+          />
+        </Field>
+
+        <Field label="Short version" hint="Two or three sentences at the top of the case study.">
+          <TextArea
+            rows={3}
+            value={draft.tldr}
+            onChange={(event) => update("tldr", event.target.value)}
+          />
+        </Field>
+
+        <Field label="Metrics" hint="Up to eight. Leave value empty to drop a row.">
+          <RowsInput
+            value={draft.metrics}
+            onChange={(value) => update("metrics", value)}
+            columns={[
+              { key: "value", label: "Value", width: "w-28" },
+              { key: "label", label: "Label" },
+              { key: "note", label: "Note" },
+            ]}
+            empty={{ label: "", value: "", note: "" }}
+            max={8}
+          />
+        </Field>
+
+        <Field label="Pipeline" hint="Ordered stages drawn as a diagram on the case study.">
+          <RowsInput
+            value={draft.pipeline}
+            onChange={(value) => update("pipeline", value)}
+            columns={[
+              { key: "stage", label: "Stage", width: "w-40" },
+              { key: "detail", label: "Detail" },
+            ]}
+            empty={{ stage: "", detail: "" }}
+            max={10}
+          />
+        </Field>
 
         <Field label="Built with" hint="Comma separated.">
           <ListInput

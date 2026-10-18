@@ -1,0 +1,43 @@
+{
+  "title": "Talk-back, Hausa",
+  "note": "A representative replay of a real exchange. Timings are illustrative, not measured on this page.",
+  "language": "Hausa",
+  "turns": [
+    {
+      "who": "learner",
+      "text": "Ina kwana? Yaya aiki?",
+      "gloss": "Good morning. How is work?",
+      "stages": [
+        { "name": "listening", "ms": 1400 },
+        { "name": "transcribing", "ms": 350 }
+      ]
+    },
+    {
+      "who": "app",
+      "text": "Lafiya lau, na gode. Aiki yana tafiya da kyau. Kai fa, yaya gida?",
+      "gloss": "Fine, thank you. Work is going well. And you, how is home?",
+      "stages": [
+        { "name": "thinking", "ms": 420 },
+        { "name": "speaking", "ms": 2600 }
+      ]
+    },
+    {
+      "who": "learner",
+      "text": "Gida lafiya. Ina koyon Hausa.",
+      "gloss": "Home is fine. I am learning Hausa.",
+      "stages": [
+        { "name": "listening", "ms": 1500 },
+        { "name": "transcribing", "ms": 300 }
+      ]
+    },
+    {
+      "who": "app",
+      "text": "Madalla! Ka yi kyau sosai. Mu ci gaba.",
+      "gloss": "Excellent! You are doing very well. Let us continue.",
+      "stages": [
+        { "name": "thinking", "ms": 380 },
+        { "name": "speaking", "ms": 2200 }
+      ]
+    }
+  ]
+}

@@ -7,7 +7,7 @@ Each entity has three shapes:
 """
 
 from datetime import date, datetime
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -15,6 +15,19 @@ from app.schemas.common import ORMModel, slugify
 from app.schemas.media import MediaOut
 
 Slug = Annotated[str, Field(pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$", max_length=200)]
+
+ProjectStatus = Literal["live", "in_build", "archived"]
+
+
+class Metric(BaseModel):
+    label: str = Field(min_length=1, max_length=120)
+    value: str = Field(min_length=1, max_length=60)
+    note: str = Field(default="", max_length=200)
+
+
+class PipelineStage(BaseModel):
+    stage: str = Field(min_length=1, max_length=60)
+    detail: str = Field(default="", max_length=400)
 
 
 # --------------------------------------------------------------------------- project
@@ -30,6 +43,13 @@ class ProjectBase(BaseModel):
     tech: list[str] = Field(default_factory=list)
     links: dict[str, str] = Field(default_factory=dict)
     cover_image_id: int | None = None
+    status: ProjectStatus = "live"
+    featured: bool = False
+    tldr: str = ""
+    highlight: str = Field(default="", max_length=200)
+    metrics: list[Metric] = Field(default_factory=list, max_length=8)
+    pipeline: list[PipelineStage] = Field(default_factory=list, max_length=10)
+    team_size: int | None = Field(default=None, ge=1, le=10000)
     sort_order: int = 0
     published: bool = False
 
@@ -57,6 +77,13 @@ class ProjectUpdate(BaseModel):
     tech: list[str] | None = None
     links: dict[str, str] | None = None
     cover_image_id: int | None = None
+    status: ProjectStatus | None = None
+    featured: bool | None = None
+    tldr: str | None = None
+    highlight: str | None = Field(default=None, max_length=200)
+    metrics: list[Metric] | None = Field(default=None, max_length=8)
+    pipeline: list[PipelineStage] | None = Field(default=None, max_length=10)
+    team_size: int | None = Field(default=None, ge=1, le=10000)
     sort_order: int | None = None
     published: bool | None = None
 
@@ -73,6 +100,13 @@ class ProjectOut(ORMModel):
     tech: list[str]
     links: dict[str, Any]
     cover_image: MediaOut | None
+    status: str
+    featured: bool
+    tldr: str
+    highlight: str
+    metrics: list[dict[str, Any]]
+    pipeline: list[dict[str, Any]]
+    team_size: int | None
     sort_order: int
     published: bool
     created_at: datetime
@@ -206,14 +240,29 @@ class SocialLink(BaseModel):
     url: str = Field(min_length=1, max_length=500)
 
 
+class Stat(BaseModel):
+    label: str = Field(min_length=1, max_length=120)
+    value: str = Field(min_length=1, max_length=60)
+
+
+class Education(BaseModel):
+    degree: str = Field(min_length=1, max_length=200)
+    school: str = Field(min_length=1, max_length=200)
+    years: str = Field(default="", max_length=60)
+    status: str = Field(default="", max_length=60)
+
+
 class SettingsUpdate(BaseModel):
     name: str | None = Field(default=None, max_length=200)
     greeting: str | None = Field(default=None, max_length=100)
+    title: str | None = Field(default=None, max_length=200)
     tagline: str | None = Field(default=None, max_length=300)
     bio_md: str | None = None
     location: str | None = Field(default=None, max_length=200)
     email: str | None = Field(default=None, max_length=255)
     socials: list[SocialLink] | None = None
+    stats: list[Stat] | None = Field(default=None, max_length=6)
+    education: list[Education] | None = Field(default=None, max_length=6)
     resume_media_id: int | None = None
     avatar_id: int | None = None
 
@@ -221,10 +270,13 @@ class SettingsUpdate(BaseModel):
 class SettingsOut(ORMModel):
     name: str
     greeting: str
+    title: str
     tagline: str
     bio_md: str
     location: str
     email: str
     socials: list[dict[str, Any]]
+    stats: list[dict[str, Any]]
+    education: list[dict[str, Any]]
     resume_media: MediaOut | None
     avatar: MediaOut | None
