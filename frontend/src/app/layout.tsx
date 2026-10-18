@@ -7,6 +7,7 @@ import { LiveChat } from "@/components/LiveChat";
 import { MetaPixel } from "@/components/MetaPixel";
 import { SiteBackground } from "@/components/SiteBackground";
 import { PageViewTracker } from "@/components/PageViewTracker";
+import { RouteLoader } from "@/components/motion/RouteLoader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { getSettings } from "@/lib/api";
@@ -154,6 +155,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <div aria-hidden="true" className="h-20 md:hidden" />
 
         <BottomNav />
+        <RouteLoader name={settings.name} />
         <PageViewTracker />
         <MetaPixel />
         <LiveChat />

@@ -146,10 +146,6 @@ export function NetworkHero({
   }
 
   const accuracy = model ? Math.round(model.metrics.test_accuracy * 100) : null;
-  const paramCount = useMemo(
-    () => (model ? model.layers.reduce((sum, l) => sum + l.in * l.out + l.out, 0) : 0),
-    [model],
-  );
   const confidence = prediction ? confidenceLabel(prediction.top.p) : null;
   const verdict = useMemo(() => {
     if (!prediction) return null;
@@ -187,13 +183,11 @@ export function NetworkHero({
       <div className="shell relative mt-12">
         <div className="border-t border-line pt-8">
           <p className="readout">live model · langid-v1</p>
-          <h2 className="mt-4 max-w-[28ch] text-h2 font-bold tracking-tight text-ink">
-            A real neural network you can watch think.
+          <h2 className="mt-4 max-w-[24ch] text-h2 font-bold tracking-tight text-ink">
+            Watch a real neural network think.
           </h2>
-          <p className="mt-3 max-w-[60ch] text-lead text-ink-soft">
-            Same thing GPT and Claude are made of, with{" "}
-            {paramCount ? paramCount.toLocaleString() : "20,000"} weights instead of trillions. I
-            trained it to tell which of eight Malegado languages you are typing.
+          <p className="mt-3 max-w-[44ch] text-lead text-ink-soft">
+            I trained it to tell eight Malegado languages apart.
           </p>
         </div>
       </div>
@@ -241,9 +235,6 @@ export function NetworkHero({
           <li className="py-2 lg:border-l lg:border-line lg:pl-8 lg:first:border-0 lg:first:pl-0">
             <p className="font-mono text-micro text-ink-soft">step 2</p>
             <p className="mt-1 text-h4 font-semibold text-ink">Press Play</p>
-            <p className="mt-2 text-small text-ink-soft">
-              It fires one neuron at a time and the camera follows.
-            </p>
             <button
               type="button"
               onClick={play}
@@ -266,11 +257,9 @@ export function NetworkHero({
             >
               {verdict ?? "…"}
             </output>
-            <p className="mt-2 text-small text-ink-soft">
-              {prediction
-                ? `${Math.round(prediction.top.p * 100)}% sure. Yellow dot on the right.`
-                : "The winner turns yellow."}
-            </p>
+            {prediction && (
+              <p className="mt-2 text-small text-ink-soft">{Math.round(prediction.top.p * 100)}% sure</p>
+            )}
           </li>
         </ol>
       </div>

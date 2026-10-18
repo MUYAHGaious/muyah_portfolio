@@ -11,7 +11,6 @@ import type { SiteSettings } from "@/lib/types";
  */
 export function Hero({ settings }: { settings: SiteSettings }) {
   const github = settings.socials.find((s) => /github\.com/i.test(s.url));
-  const education = settings.education ?? [];
 
   return (
     <section className="relative -mt-[4.5rem] pt-[4.5rem] sm:-mt-[5rem] sm:pt-[5rem]">
@@ -28,21 +27,8 @@ export function Hero({ settings }: { settings: SiteSettings }) {
             {settings.name}
           </h1>
 
-          <p className="mt-5 max-w-[46ch] text-lead text-ink">
-            {settings.title ? (
-              <>
-                <span className="font-semibold">{settings.title.replace(/\s*·\s*/g, ", ")}</span>
-                {". "}
-              </>
-            ) : null}
-            I lead the AI department at Skye8 and build the models myself
-            {settings.location ? `, from ${settings.location}` : ""}.
-          </p>
-
-          <p className="mt-3 max-w-[52ch] text-small text-ink-soft">
-            Text and speech models and real-time voice talk-back behind Malegado&apos;s 590
-            languages. Now building Scholar AI.
-            {education.length > 0 && ` ${education[0].degree}, ${education[0].school}.`}
+          <p className="mt-5 max-w-[40ch] text-lead text-ink">
+            {settings.title ? settings.title.replace(/\s*·\s*/g, ", ") : "AI engineer"}.
           </p>
 
           <div className="mt-7 flex flex-wrap items-center gap-3">
