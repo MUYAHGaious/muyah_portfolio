@@ -2,7 +2,7 @@
 
 import hashlib
 import hmac
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import bcrypt
 import jwt
@@ -37,7 +37,7 @@ def verify_password(password: str, password_hash: str) -> bool:
 
 
 def create_access_token(subject: str) -> str:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     payload = {
         "sub": subject,
         "iat": now,
@@ -62,7 +62,7 @@ def _daily_salt(when: datetime | None = None) -> str:
     Rotating it means a visitor hash stops matching after 24 hours, so views cannot
     be stitched into a profile over time.
     """
-    day = (when or datetime.now(timezone.utc)).strftime("%Y-%m-%d")
+    day = (when or datetime.now(UTC)).strftime("%Y-%m-%d")
     return f"{settings.secret_key}:{day}"
 
 

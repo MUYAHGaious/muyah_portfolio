@@ -1,7 +1,7 @@
 """Async SQLAlchemy engine, session factory, and declarative base."""
 
 from collections.abc import AsyncGenerator
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import DateTime, MetaData, types
 from sqlalchemy.dialects.postgresql import JSONB
@@ -36,7 +36,7 @@ TimestampType = DateTime(timezone=True)
 
 def utcnow() -> datetime:
     """Timezone-aware UTC now. Used as a column default across all models."""
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def timestamp_column(**kwargs):

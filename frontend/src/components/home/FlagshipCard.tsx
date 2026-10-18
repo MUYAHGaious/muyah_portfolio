@@ -29,25 +29,27 @@ export function FlagshipCard({
 
   return (
     <Reveal as="article" className="panel overflow-hidden">
+      {/* The real screenshot runs across the top of the card. */}
+      {project.cover_image && (
+        <a
+          href={project.links.live ?? `/work/${project.slug}`}
+          target={project.links.live ? "_blank" : undefined}
+          rel={project.links.live ? "noopener noreferrer" : undefined}
+          className="block border-b border-line bg-[#0b1230]"
+        >
+          <img
+            src={project.cover_image.url}
+            srcSet={project.cover_image.srcset}
+            sizes="(min-width: 82rem) 76rem, 95vw"
+            alt={project.cover_image.alt_text}
+            className="aspect-[16/9] w-full object-cover object-top sm:aspect-[21/9]"
+          />
+        </a>
+      )}
+
       <div className="grid gap-5 p-4 sm:p-6 lg:grid-cols-12 lg:gap-10 lg:p-10">
-        {/* Visual first on small screens: the real screenshot, then the demo. */}
-        <div className={`flex flex-col gap-4 lg:col-span-5 ${flip ? "lg:order-1" : "lg:order-2"}`}>
-          {project.cover_image && (
-            <a
-              href={project.links.live ?? `/work/${project.slug}`}
-              target={project.links.live ? "_blank" : undefined}
-              rel={project.links.live ? "noopener noreferrer" : undefined}
-              className="block overflow-hidden rounded-[var(--r-lg)] border border-line bg-[#0b1230]"
-            >
-              <img
-                src={project.cover_image.url}
-                srcSet={project.cover_image.srcset}
-                sizes="(min-width: 64rem) 32rem, 90vw"
-                alt={project.cover_image.alt_text}
-                className="aspect-[16/10] w-full object-cover object-top"
-              />
-            </a>
-          )}
+        {/* Demo first on small screens. */}
+        <div className={`lg:col-span-5 ${flip ? "lg:order-1" : "lg:order-2"}`}>
           {visual ?? <PipelineSketch project={project} />}
         </div>
 

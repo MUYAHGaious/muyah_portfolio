@@ -1,6 +1,6 @@
 """Analytics collection and aggregation, including the privacy guarantees."""
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 
 from sqlalchemy import select
 
@@ -45,7 +45,7 @@ async def test_crawlers_are_not_counted(client, db):
 
 async def test_visitor_hash_stops_matching_after_a_day():
     """Rotating the salt is what prevents views being stitched into a profile."""
-    today = datetime(2026, 8, 3, 12, 0, tzinfo=timezone.utc)
+    today = datetime(2026, 8, 3, 12, 0, tzinfo=UTC)
     tomorrow = today + timedelta(days=1)
 
     assert visitor_hash("1.2.3.4", "UA", today) == visitor_hash("1.2.3.4", "UA", today)

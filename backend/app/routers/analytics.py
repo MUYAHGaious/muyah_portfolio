@@ -1,6 +1,6 @@
 """Cookieless page-view collection and the admin summary."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Query, Request, Response, status
 
@@ -30,7 +30,7 @@ async def collect(
     if device == "bot":
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     db.add(
         PageView(
             path=payload.path[:500],

@@ -438,45 +438,6 @@ PROJECTS = [
         ),
     },
     {
-        "slug": "truck-parts-co",
-        "title": "Truck Parts & Co.",
-        "status": "live",
-        "featured": False,
-        "year": 2026,
-        "role": "Designer and engineer, end to end",
-        "category": "client",
-        "highlight": "A parts yard in Phoenix that quotes from a list you build",
-        "summary": (
-            "Catalogue and quote-request site for a used truck parts yard in Phoenix, "
-            "Arizona. Visitors browse the inventory, build a quote list and send it; staff "
-            "manage stock and requests in an admin."
-        ),
-        "tldr": (
-            "No online payment and no account to create: the yard quotes by phone, text or "
-            "email, so the site is built around a quote list instead of a cart. Stock loads "
-            "from a CSV and a folder of photos."
-        ),
-        "tech": ["React", "TypeScript", "Vite", "Tailwind", "Django 5", "Django REST Framework"],
-        "links": {"live": "https://truckandpartsco.com"},
-        "metrics": [],
-        "pipeline": [],
-        "sort_order": 42,
-        "published": True,
-        "body_md": (
-            "## The brief\n\n"
-            "A real yard with real stock and no interest in online checkout. People call, "
-            "text or email for a price. The site had to make that faster, not replace it.\n\n"
-            "## What I built\n\n"
-            "An inventory people can browse by category, a quote list they fill as they go, "
-            "and one send button. The request is saved and emailed to the business. Staff "
-            "manage stock and quote requests at /admin. The starting stock loads from a CSV "
-            "and a folder of photos, so the owner never touches a database.\n\n"
-            "## Stack\n\n"
-            "Vite, React and TypeScript with Tailwind on the front; Django 5 with Django REST "
-            "Framework and JWT auth behind it. Deployed on a single VPS."
-        ),
-    },
-    {
         "slug": "dream-tech-website",
         "title": "Dream Tech website",
         "status": "live",
@@ -514,39 +475,6 @@ PROJECTS = [
             "Next.js 16 App Router and Payload CMS 3 in one TypeScript server on "
             "PostgreSQL 17. Mailpit for development email, Docker Compose for the "
             "infrastructure."
-        ),
-    },
-    {
-        "slug": "engines-and-transmissions-with-jay",
-        "title": "Engines and Transmissions with Jay",
-        "status": "live",
-        "featured": False,
-        "year": 2026,
-        "role": "Designer and engineer",
-        "category": "client",
-        "highlight": "Find the part, ask the shop, in two taps",
-        "summary": (
-            "Website for an engines and transmissions shop in Hermon, Maine: stock, "
-            "reviews, and a short ask-the-shop form that reaches the owner."
-        ),
-        "tldr": (
-            "Built for people searching on a phone from a breakdown. The page leads with a "
-            "part finder and the phone number, and the form is three fields."
-        ),
-        "tech": ["Next.js", "TypeScript", "Tailwind"],
-        "links": {"live": "https://enginesandtransmissionswithjay.com"},
-        "metrics": [],
-        "pipeline": [],
-        "sort_order": 46,
-        "published": True,
-        "body_md": (
-            "## The brief\n\n"
-            "A small shop that sells used engines and transmissions and wanted to be found "
-            "and contacted easily.\n\n"
-            "## What I built\n\n"
-            "A fast static-first Next.js site: a part finder at the top, stock with photos, "
-            "reviews, and an ask form that sends to the owner. Mobile first, because that is "
-            "where the customers are.\n"
         ),
     },
     {

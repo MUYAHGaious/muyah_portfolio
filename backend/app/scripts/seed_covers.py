@@ -33,9 +33,7 @@ ALT: dict[str, str] = {
     "veinrecon-biometric-verification": "veinRecon vein finder: infrared hand image with detected veins highlighted in green",
     "virtual-clinical-trial-simulator": "Virtual Clinical Trial Simulator: patient, treatment and a 42-day parasite trajectory",
     "kodschul-seminar-management": "Kodschul dashboard with upcoming seminars, trainer assignments and booked value",
-    "truck-parts-co": "Truck Parts & Co. home page: used truck parts in Phoenix, browse inventory",
     "dream-tech-website": "Dream Tech home page: Technology for a Better Tomorrow",
-    "engines-and-transmissions-with-jay": "Engines and Transmissions with Jay home page with the part finder",
     "tease": "TEASE booking site: routes and departures for bus travel in Cameroon",
 }
 
