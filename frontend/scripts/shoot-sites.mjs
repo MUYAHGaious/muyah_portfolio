@@ -26,8 +26,14 @@ for (const url of urls) {
   const page = await context.newPage();
   const name = new URL(url).hostname.replace(/^www\./, "").replace(/[^a-z0-9.-]/gi, "_");
   try {
-    await page.goto(url, { waitUntil: "networkidle", timeout: 45_000 });
-    await page.waitForTimeout(2500);
+    // Games and heavy pages never reach network idle; fall back to "load".
+    try {
+      await page.goto(url, { waitUntil: "networkidle", timeout: 30_000 });
+      await page.waitForTimeout(2500);
+    } catch {
+      await page.goto(url, { waitUntil: "load", timeout: 60_000 });
+      await page.waitForTimeout(8000);
+    }
     const file = join(outDir, `${name}.jpg`);
     await page.screenshot({ path: file, type: "jpeg", quality: 88 });
     console.log(`ok   ${url} -> ${file}`);

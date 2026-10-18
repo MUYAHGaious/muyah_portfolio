@@ -331,17 +331,17 @@ PROJECTS = [
     },
     {
         "slug": "longline",
-        "title": "Longline",
+        "title": "Leongline",
         "status": "live",
         "featured": False,
         "year": 2026,
         "role": "Designer and engineer",
         "category": "game",
-        "highlight": "A two-player board game for phone and PC, in 3D",
+        "highlight": "A two-player 3D board game for phone and PC, live at leongline.com",
         "summary": (
-            "Longline is a three-in-a-line board game for two players, on a phone or a PC. "
-            "A 3D board, themed worlds, local and online play, and a rules engine that is "
-            "tested on its own."
+            "Leongline is a three-in-a-line board game for two players, on a phone or a PC, "
+            "published with Skye8. A 3D board, themed worlds, local and online play, and a "
+            "rules engine that is tested on its own."
         ),
         "tldr": (
             "The rules live in one shared package with their own tests, the 3D board is "
@@ -350,7 +350,7 @@ PROJECTS = [
             "colours."
         ),
         "tech": ["Svelte 5", "Three.js", "TypeScript", "Vite PWA", "Node", "Vitest"],
-        "links": {},
+        "links": {"live": "https://leongline.com"},
         "metrics": [
             {"label": "players", "value": "2", "note": "same device or online"},
             {"label": "pieces each", "value": "3", "note": "place, then slide along the lines"},
@@ -585,7 +585,7 @@ PROJECTS = [
         "category": "ai",
         "year": 2026,
         "tech": ["PyTorch", "GANs", "Digital Twins", "FastAPI", "Next.js"],
-        "links": {},
+        "links": {"live": "https://vct-wbaw.onrender.com"},
         "sort_order": 38,
         "published": True,
         "body_md": (
@@ -616,7 +616,7 @@ PROJECTS = [
         "category": "web",
         "year": 2026,
         "tech": ["FastAPI", "PostgreSQL", "Redis", "Celery", "Stripe", "AWS S3"],
-        "links": {},
+        "links": {"live": "https://myskills2earn.com"},
         "sort_order": 80,
         "published": True,
         "body_md": (
