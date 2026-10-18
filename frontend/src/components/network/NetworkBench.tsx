@@ -111,6 +111,26 @@ export function NetworkBench({ className = "" }: { className?: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model]);
 
+  // Play once on arrival, as soon as the frame is on screen, so the visitor
+  // sees the network think without having to find the button first.
+  const autoplayed = useRef(false);
+  useEffect(() => {
+    if (!model || !activations || autoplayed.current || reducedMotion) return;
+    const node = frameRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting) || autoplayed.current) return;
+        autoplayed.current = true;
+        observer.disconnect();
+        window.setTimeout(() => setReplayKey((k) => k + 1), 600);
+      },
+      { threshold: 0.35 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [model, activations, reducedMotion]);
+
   function send(value: string) {
     soundsRef.current?.unlock();
     setConclusion(null);
@@ -301,12 +321,23 @@ export function NetworkBench({ className = "" }: { className?: string }) {
       <div className="pointer-events-none absolute bottom-16 left-3 w-[min(20rem,calc(100%-1.5rem))] sm:left-4">
         <Inspector info={inspected} />
       </div>
-      <AgentPop
-        conclusion={conclusion}
-        onReplay={play}
-        onClose={() => setConclusion(null)}
-        compact={!bench}
-      />
+      {!narrow && (
+        <AgentPop
+          conclusion={conclusion}
+          onReplay={play}
+          onClose={() => setConclusion(null)}
+          compact={!bench}
+        />
+      )}
+      {narrow && (
+        <AgentPop
+          conclusion={conclusion}
+          onReplay={play}
+          onClose={() => setConclusion(null)}
+          compact
+          inline
+        />
+      )}
 
       {/* Bottom bar: the answer and the view controls. */}
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-line bg-ground/60 px-3 py-2.5 sm:px-4">
@@ -362,7 +393,8 @@ export function NetworkBench({ className = "" }: { className?: string }) {
             className="ml-1 inline-flex h-9 items-center gap-2 rounded-md border border-field px-3 text-small text-ink-soft hover:border-ember hover:text-ink"
           >
             <span aria-hidden="true">{bench ? "⤡" : "⤢"}</span>
-            {bench ? "Close the bench" : "Open the full bench"}
+            <span className="sm:hidden">{bench ? "Close" : "Full bench"}</span>
+            <span className="hidden sm:inline">{bench ? "Close the bench" : "Open the full bench"}</span>
           </button>
         </div>
       </div>

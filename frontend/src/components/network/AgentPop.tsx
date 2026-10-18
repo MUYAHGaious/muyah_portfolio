@@ -39,12 +39,15 @@ export function AgentPop({
   onReplay,
   onClose,
   compact = false,
+  inline = false,
 }: {
   conclusion: Conclusion | null;
   onReplay: () => void;
   onClose: () => void;
   /** Inside the docked frame: smaller orb, bottom-left, shorter bubble. */
   compact?: boolean;
+  /** Phones: a strip under the network instead of an overlay on top of it. */
+  inline?: boolean;
 }) {
   const [talking, setTalking] = useState(false);
   const orbRef = useRef<HTMLDivElement>(null);
@@ -89,10 +92,12 @@ export function AgentPop({
   return (
     <div
       role="status"
-      className={`agent-pop pointer-events-auto absolute left-3 flex items-end gap-3 sm:left-4 ${
-        compact
-          ? "agent-pop-compact bottom-16 max-w-[min(22rem,calc(100%-1.5rem))]"
-          : "top-1/2 max-w-[min(26rem,calc(100%-2rem))] -translate-y-1/2 lg:left-6"
+      className={`agent-pop pointer-events-auto flex items-end gap-3 ${
+        inline
+          ? "agent-pop-compact agent-pop-inline relative border-t border-line bg-ground/60 px-3 py-3"
+          : compact
+            ? "agent-pop-compact absolute bottom-16 left-3 max-w-[min(22rem,calc(100%-1.5rem))] sm:left-4"
+            : "absolute left-3 top-1/2 max-w-[min(26rem,calc(100%-2rem))] -translate-y-1/2 sm:left-4 lg:left-6"
       }`}
     >
       <div className="relative order-1 shrink-0">
@@ -113,7 +118,11 @@ export function AgentPop({
         <span aria-hidden="true" className="agent-shadow" />
       </div>
 
-      <div className="order-2 min-w-[16rem] rounded-[var(--r-lg)] rounded-bl-sm border border-field bg-ground/95 p-4 text-small text-ink shadow-float">
+      <div
+        className={`order-2 min-w-0 rounded-[var(--r-lg)] rounded-bl-sm border border-field bg-ground/95 p-4 text-small text-ink shadow-float ${
+          inline ? "flex-1" : "min-w-[16rem]"
+        }`}
+      >
         <p className="flex items-center gap-2 font-mono text-micro text-ink-soft">
           <PixelM />
           Muyah Code
