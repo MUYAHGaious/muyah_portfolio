@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import type { Conclusion } from "@/components/network/NetworkHero";
+import type { Conclusion } from "@/components/network/NetworkBench";
 
 /**
  * Muyah Code, the little character that pops out of the corner when a run
@@ -38,10 +38,13 @@ export function AgentPop({
   conclusion,
   onReplay,
   onClose,
+  compact = false,
 }: {
   conclusion: Conclusion | null;
   onReplay: () => void;
   onClose: () => void;
+  /** Inside the docked frame: smaller orb, bottom-left, shorter bubble. */
+  compact?: boolean;
 }) {
   const [talking, setTalking] = useState(false);
   const orbRef = useRef<HTMLDivElement>(null);
@@ -86,7 +89,11 @@ export function AgentPop({
   return (
     <div
       role="status"
-      className="agent-pop pointer-events-auto absolute left-4 top-1/2 flex max-w-[min(26rem,calc(100%-2rem))] -translate-y-1/2 items-end gap-3 lg:left-6"
+      className={`agent-pop pointer-events-auto absolute left-3 flex items-end gap-3 sm:left-4 ${
+        compact
+          ? "agent-pop-compact bottom-16 max-w-[min(22rem,calc(100%-1.5rem))]"
+          : "top-1/2 max-w-[min(26rem,calc(100%-2rem))] -translate-y-1/2 lg:left-6"
+      }`}
     >
       <div className="relative order-1 shrink-0">
         <div
@@ -112,11 +119,13 @@ export function AgentPop({
           Muyah Code
         </p>
         <p className="mt-2 flex items-baseline gap-3">
-          <span className="text-h2 font-bold tracking-tight text-[#fde68a]">{conclusion.language}</span>
+          <span className={`font-bold tracking-tight text-[#fde68a] ${compact ? "text-h3" : "text-h2"}`}>
+            {conclusion.language}
+          </span>
           <span className="font-mono text-h4 text-ink">{conclusion.percent}%</span>
         </p>
         <p className="mt-0.5 text-small text-ink-soft">{conclusion.confidence}.</p>
-        <p className="mt-2 text-micro leading-relaxed text-ink-soft">{conclusion.detail}</p>
+        {!compact && <p className="mt-2 text-micro leading-relaxed text-ink-soft">{conclusion.detail}</p>}
         <div className="mt-3 flex gap-2">
           <button
             type="button"
@@ -152,6 +161,42 @@ export function AgentPop({
         .agent-pop {
           transform: translate3d(0, -50%, 0);
           perspective: 400px;
+        }
+        .agent-pop-compact {
+          transform: none;
+          animation-name: agent-in-compact;
+        }
+        @keyframes agent-in-compact {
+          from {
+            opacity: 0;
+            transform: translate3d(-1.5rem, 0, 0) scale(0.85);
+          }
+          to {
+            opacity: 1;
+            transform: none;
+          }
+        }
+        .agent-pop-compact .agent-orb {
+          width: 60px;
+          height: 60px;
+        }
+        .agent-pop-compact .agent-eye {
+          width: 8px;
+          height: 19px;
+        }
+        .agent-pop-compact .agent-eye-left {
+          left: 21px;
+          top: 24px;
+        }
+        .agent-pop-compact .agent-eye-right {
+          left: 36px;
+          top: 17px;
+        }
+        .agent-pop-compact .agent-shine {
+          left: 11px;
+          top: 7px;
+          width: 16px;
+          height: 9px;
         }
         .agent-orb {
           position: relative;

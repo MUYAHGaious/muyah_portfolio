@@ -1,9 +1,7 @@
-import { Reveal } from "@/components/motion/Reveal";
 import type { Service } from "@/lib/types";
 
 /**
- * Services as three plain columns. No cards, no gradients: a title, a line,
- * and the points. The hairline between columns is the only structure.
+ * Services as text columns separated by hairlines. No boxes.
  */
 export function ServicesSection({
   services,
@@ -15,22 +13,21 @@ export function ServicesSection({
   if (services.length === 0) return null;
 
   return (
-    <ul className="grid gap-px overflow-hidden rounded-[var(--r-lg)] border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
-      {services.map((service, index) => (
-        <Reveal as="li" key={service.id} delay={index * 80} className="bg-surface/90 p-6 sm:p-7">
+    <ul className="grid divide-y divide-line border-y border-line sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+      {services.map((service) => (
+        <li key={service.id} className="py-6 sm:px-6 sm:py-2 sm:first:pl-0 sm:last:pr-0">
           <h3 className="text-h4 font-bold tracking-tight text-ink">{service.title}</h3>
           {service.blurb && <p className="mt-2 text-small text-ink-soft">{service.blurb}</p>}
           {showPoints && service.points.length > 0 && (
-            <ul className="mt-5 space-y-2">
+            <ul className="mt-4 space-y-1.5">
               {service.points.map((point) => (
-                <li key={point} className="flex gap-2.5 text-small text-ink-soft">
-                  <span aria-hidden="true" className="mt-[0.55em] h-1.5 w-1.5 shrink-0 rounded-full bg-ember" />
+                <li key={point} className="text-small text-ink-soft">
                   {point}
                 </li>
               ))}
             </ul>
           )}
-        </Reveal>
+        </li>
       ))}
     </ul>
   );

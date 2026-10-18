@@ -49,16 +49,12 @@ test.describe("public site", () => {
     }
   });
 
-  test("scroll-revealed content becomes visible", async ({ page }) => {
+  test("sections below the fold are in the page without scrolling", async ({ page }) => {
     await page.goto("/");
-
-    const revealed = page.locator("[data-reveal]").first();
-    await revealed.scrollIntoViewIfNeeded();
-
-    // The reveal must finish — content that stays at opacity 0 is invisible
-    // content, which is the failure mode worth guarding against.
-    await expect(revealed).toHaveAttribute("data-revealed", "true", { timeout: 5_000 });
-    await expect(revealed).toBeVisible();
+    // Nothing is hidden behind a scroll animation any more: the work list is
+    // present and visible as soon as the page renders.
+    await expect(page.locator("#work").first()).toBeAttached();
+    await expect(page.locator("#work h2").first()).toBeVisible();
   });
 
   test("an unknown URL returns the 404 page", async ({ page }) => {

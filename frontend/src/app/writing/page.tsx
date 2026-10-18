@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { PageFrame } from "@/components/PageFrame";
 import { PageHero } from "@/components/PageHero";
-import { Reveal } from "@/components/motion/Reveal";
-import { getPosts } from "@/lib/api";
+import { getPosts, getProjects, getSettings } from "@/lib/api";
 import { fullDate } from "@/lib/format";
 
 export const metadata: Metadata = {
@@ -26,14 +26,14 @@ export default async function WritingPage({ searchParams }: Search) {
   const { page: pageParam, tag } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
 
-  const posts = await getPosts(page, tag);
+  const [posts, settings, projects] = await Promise.all([getPosts(page, tag), getSettings(), getProjects()]);
+  const featured = projects.filter((p) => p.featured);
   const lastPage = Math.max(1, Math.ceil(posts.total / posts.per_page));
 
   return (
-    <>
+    <PageFrame settings={settings} featured={featured}>
       <PageHero
-        eyebrow="Writing"
-        title="Notes and longer pieces."
+        title="Writing."
         lead={tag ? undefined : "Things worth writing down as I work through them."}
       >
         {tag && (
@@ -49,55 +49,36 @@ export default async function WritingPage({ searchParams }: Search) {
         )}
       </PageHero>
 
-      <section className="shell pt-12 sm:pt-16">
+      <section className="pt-10 sm:pt-14">
         {posts.items.length === 0 ? (
-          <div className="card p-10 text-center">
-            <p className="text-h4 font-semibold text-ink">
-              {tag ? "No posts with that tag" : "Nothing published yet"}
-            </p>
-            <p className="mt-2 text-small text-ink-soft">
-              {tag ? "Try clearing the filter." : "Write your first post from the admin panel."}
-            </p>
-          </div>
+          <p className="border-y border-line py-8 text-small text-ink-soft">
+            {tag
+              ? "No posts with that tag. Try clearing the filter."
+              : "Nothing published yet. Write the first post from the admin panel."}
+          </p>
         ) : (
-          <ul className="grid gap-4">
-            {posts.items.map((post, index) => (
-              <Reveal as="li" key={post.id} delay={index * 70}>
-                <Link
-                  href={`/writing/${post.slug}`}
-                  className="card card-lift group block p-6 sm:p-8"
-                >
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="text-micro normal-case tracking-normal text-ink-faint">
-                      {post.published_at ? fullDate(post.published_at) : "Draft"}
+          <ul className="divide-y divide-line border-y border-line">
+            {posts.items.map((post) => (
+              <li key={post.id}>
+                <Link href={`/writing/${post.slug}`} className="group grid gap-2 py-6 sm:grid-cols-12 sm:gap-6">
+                  <span className="font-mono text-micro text-ink-faint sm:col-span-3 sm:pt-1.5">
+                    {post.published_at ? fullDate(post.published_at) : "Draft"}
+                  </span>
+                  <span className="min-w-0 sm:col-span-9">
+                    <span className="block text-h3 font-bold tracking-tight text-ink transition-colors group-hover:text-ember-deep">
+                      {post.title}
                     </span>
-                    {post.tags.slice(0, 3).map((postTag) => (
-                      <span
-                        key={postTag}
-                        className="rounded-full bg-surface-2 px-2.5 py-1 text-micro normal-case tracking-normal text-ink-soft"
-                      >
-                        {postTag}
+                    {post.excerpt && (
+                      <span className="mt-2 block max-w-[62ch] text-small text-ink-soft">{post.excerpt}</span>
+                    )}
+                    {post.tags.length > 0 && (
+                      <span className="mt-3 block font-mono text-micro text-ink-faint">
+                        {post.tags.slice(0, 3).join(" · ")}
                       </span>
-                    ))}
-                  </div>
-
-                  <h2 className="mt-3 text-h3 font-bold tracking-tight text-ink">{post.title}</h2>
-
-                  {post.excerpt && (
-                    <p className="mt-2 max-w-[62ch] text-small text-ink-soft">{post.excerpt}</p>
-                  )}
-
-                  <span className="mt-5 inline-flex items-center gap-1.5 text-small font-semibold text-ember-deep">
-                    Read
-                    <span
-                      aria-hidden="true"
-                      className="transition-transform duration-200 group-hover:translate-x-1"
-                    >
-                      →
-                    </span>
+                    )}
                   </span>
                 </Link>
-              </Reveal>
+              </li>
             ))}
           </ul>
         )}
@@ -126,6 +107,6 @@ export default async function WritingPage({ searchParams }: Search) {
           </nav>
         )}
       </section>
-    </>
+    </PageFrame>
   );
 }

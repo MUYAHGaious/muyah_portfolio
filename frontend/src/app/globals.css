@@ -250,6 +250,73 @@ body {
   );
 }
 
+
+/* ---------------------------------------------------------------------------
+   Lab bench layout: a sticky identity rail on the left, the work on the right.
+--------------------------------------------------------------------------- */
+
+/* The two-column page grid. Rail 4 / main 8 from the large breakpoint. */
+@utility bench {
+  display: grid;
+  gap: 2.5rem 3rem;
+
+  @media (width >= 64rem) {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+@utility rail {
+  @media (width >= 64rem) {
+    grid-column: span 4 / span 4;
+    position: sticky;
+    top: 6rem;
+    max-height: calc(100vh - 7rem);
+    overflow: hidden auto;
+    scrollbar-width: none;
+  }
+}
+
+@utility bench-main {
+  min-width: 0;
+
+  @media (width >= 64rem) {
+    grid-column: span 8 / span 8;
+  }
+}
+
+/* A hairline between sections, with the section's own top space. */
+@utility rule {
+  border-top: 1px solid var(--line);
+  padding-top: 3.5rem;
+  margin-top: 3.5rem;
+
+  @media (width >= 64rem) {
+    padding-top: 5rem;
+    margin-top: 5rem;
+  }
+}
+
+/* Inline fact chip, as in "Working at [Skye8]". */
+@utility chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 200ms, color 200ms;
+
+  &:hover {
+    border-color: var(--ember);
+    color: var(--ember-deep);
+  }
+}
+
 /* ---------------------------------------------------------------------------
    Motion
 

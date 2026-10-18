@@ -69,8 +69,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
       <div className="shell relative z-10 pt-16">
         <div className="grid gap-6 border-b border-line pb-14 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-8">
-            <p className="readout">contact</p>
-            <h2 className="mt-4 max-w-[20ch] text-h2 font-bold tracking-tight text-ink">
+            <h2 className="max-w-[20ch] text-h2 font-bold tracking-tight text-ink">
               Hiring for AI, or building something that needs it?
             </h2>
           </div>

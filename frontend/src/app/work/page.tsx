@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 
+import { PageFrame } from "@/components/PageFrame";
 import { PageHero } from "@/components/PageHero";
-import { ProjectGrid } from "@/components/ProjectGrid";
+import { ProjectRows } from "@/components/ProjectRows";
 import { SectionHeading } from "@/components/SectionHeading";
-import { FlagshipCard } from "@/components/home/FlagshipCard";
-import { getProjects } from "@/lib/api";
+import { FlagshipBlock, PipelineList } from "@/components/home/FlagshipBlock";
+import { getProjects, getSettings } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "Work",
@@ -19,34 +20,44 @@ export const metadata: Metadata = {
 };
 
 export default async function WorkPage() {
-  const projects = await getProjects();
+  const [projects, settings] = await Promise.all([getProjects(), getSettings()]);
   const featured = projects.filter((p) => p.featured);
   const rest = projects.filter((p) => !p.featured);
-  const categories = [...new Set(projects.map((p) => p.category).filter(Boolean))];
+
+  // Group the index by year, newest first, so the list reads as a timeline.
+  const years = [...new Set(rest.map((p) => p.year ?? 0))].sort((a, b) => b - a);
 
   return (
-    <>
+    <PageFrame settings={settings} featured={featured}>
       <PageHero
-        eyebrow={`work · ${projects.length} projects${categories.length ? ` · ${categories.join(", ")}` : ""}`}
-        title="Selected work."
-        lead="Products I lead, software I built, and research I did. Each one has a case study with the thinking behind it."
+        title="Work."
+        lead={`${projects.length} projects: products I lead at Skye8, software I built, and research I did. Each one has a case study.`}
       />
 
       {featured.length > 0 && (
-        <section className="shell pt-12 sm:pt-16">
-          <SectionHeading eyebrow={`flagship · ${featured.length}`} title="Leading." />
-          <div className="space-y-6">
+        <section className="pt-10 sm:pt-14">
+          <div className="space-y-14 lg:space-y-20">
             {featured.map((project, index) => (
-              <FlagshipCard key={project.id} project={project} flip={index % 2 === 1} />
+              <FlagshipBlock
+                key={project.id}
+                project={project}
+                flip={index % 2 === 1}
+                visual={<PipelineList project={project} />}
+              />
             ))}
           </div>
         </section>
       )}
 
-      <section className="shell pt-16 sm:pt-20">
-        {rest.length > 0 && <SectionHeading eyebrow={`index · ${rest.length}`} title="Building." />}
-        <ProjectGrid projects={rest} />
-      </section>
-    </>
+      {years.map((year) => {
+        const group = rest.filter((p) => (p.year ?? 0) === year);
+        return (
+          <section key={year} className="rule">
+            <SectionHeading title={year ? String(year) : "Undated"} as="h2" />
+            <ProjectRows projects={group} />
+          </section>
+        );
+      })}
+    </PageFrame>
   );
 }

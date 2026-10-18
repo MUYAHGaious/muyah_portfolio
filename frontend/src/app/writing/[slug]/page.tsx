@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 
 import { JsonLd } from "@/components/JsonLd";
 import { Markdown } from "@/components/Markdown";
-import { Reveal } from "@/components/motion/Reveal";
 import { Button } from "@/components/ui/Button";
 import { getPost, getPosts, getSettings } from "@/lib/api";
 import { fullDate } from "@/lib/format";
@@ -71,11 +70,9 @@ export default async function PostPage({ params }: Params) {
           ]),
         )}
       />
-      <section className="shell pt-3">
-        <div className="panel relative overflow-hidden px-6 py-12 sm:px-12 sm:py-16">
-          <div aria-hidden="true" className="glow -top-24 left-1/3 h-72 w-72" />
-
-          <div className="relative mx-auto max-w-3xl">
+      <section className="shell pt-8 sm:pt-12">
+        <div className="mx-auto max-w-3xl border-b border-line pb-10">
+          <div className="relative">
             <div className="flex flex-wrap items-center gap-3 animate-rise">
               <span className="text-micro normal-case tracking-normal text-ink-faint">
                 {post.published_at ? fullDate(post.published_at) : "Unpublished"}
@@ -111,9 +108,9 @@ export default async function PostPage({ params }: Params) {
       </section>
 
       <section className="shell pt-12 sm:pt-16">
-        <Reveal className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-3xl">
           <Markdown>{post.body_md}</Markdown>
-        </Reveal>
+        </div>
 
         <div className="mx-auto mt-12 max-w-3xl border-t border-line pt-8">
           <Button href="/writing" variant="ghost">

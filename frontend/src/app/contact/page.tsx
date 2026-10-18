@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 import { ContactForm } from "@/components/ContactForm";
+import { PageFrame } from "@/components/PageFrame";
 import { PageHero } from "@/components/PageHero";
-import { Reveal } from "@/components/motion/Reveal";
-import { getSettings } from "@/lib/api";
+import { getProjects, getSettings } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -18,67 +18,65 @@ export const metadata: Metadata = {
 };
 
 export default async function ContactPage() {
-  const settings = await getSettings();
+  const [settings, projects] = await Promise.all([getSettings(), getProjects()]);
+  const featured = projects.filter((p) => p.featured);
 
   return (
-    <>
+    <PageFrame settings={settings} featured={featured}>
       <PageHero
-        eyebrow="Contact"
         title="Let's talk."
         lead="Tell me what you're working on and what you need. I read everything that comes through here."
       />
 
-      <section className="shell pt-12 sm:pt-16">
-        <div className="grid gap-8 lg:grid-cols-12">
-          <Reveal className="lg:col-span-4">
-            <div className="card h-full p-6 sm:p-8">
-              <p className="eyebrow">Direct</p>
-
-              {settings.email ? (
-                <a
-                  href={`mailto:${settings.email}`}
-                  className="mt-2 inline-flex min-h-11 items-center break-all text-h4 font-bold tracking-tight text-ink transition-colors hover:text-ember-deep"
-                >
-                  {settings.email}
-                </a>
-              ) : (
-                <p className="mt-2 text-small text-ink-soft">Add an address in Settings.</p>
-              )}
-
-              {settings.location && (
-                <>
-                  <p className="eyebrow mt-8">Based in</p>
-                  <p className="mt-2 text-small text-ink">{settings.location}</p>
-                </>
-              )}
-
-              {settings.socials.length > 0 && (
-                <>
-                  <p className="eyebrow mt-8">Elsewhere</p>
-                  <ul className="mt-3 flex flex-wrap gap-2">
-                    {settings.socials.map((social) => (
-                      <li key={`${social.label}-${social.url}`}>
-                        <a
-                          href={social.url}
-                          target="_blank"
-                          rel="me noopener noreferrer"
-                          className="inline-block rounded-full border border-field px-4 py-2 text-small text-ink-soft transition-all duration-200 hover:-translate-y-0.5 hover:border-ember hover:text-ember-deep"
-                        >
-                          {social.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
+      <section className="grid gap-10 pt-10 sm:pt-14 lg:grid-cols-12">
+        <div className="lg:col-span-4">
+          <dl className="divide-y divide-line border-y border-line text-small">
+            <div className="py-4">
+              <dt className="font-mono text-micro text-ink-faint">Direct</dt>
+              <dd className="mt-1">
+                {settings.email ? (
+                  <a
+                    href={`mailto:${settings.email}`}
+                    className="break-all font-semibold text-ink transition-colors hover:text-ember-deep"
+                  >
+                    {settings.email}
+                  </a>
+                ) : (
+                  <span className="text-ink-soft">Add an address in Settings.</span>
+                )}
+              </dd>
             </div>
-          </Reveal>
+            {settings.location && (
+              <div className="py-4">
+                <dt className="font-mono text-micro text-ink-faint">Based in</dt>
+                <dd className="mt-1 text-ink">{settings.location}</dd>
+              </div>
+            )}
+            {settings.socials.length > 0 && (
+              <div className="py-4">
+                <dt className="font-mono text-micro text-ink-faint">Elsewhere</dt>
+                <dd className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+                  {settings.socials.map((social) => (
+                    <a
+                      key={`${social.label}-${social.url}`}
+                      href={social.url}
+                      target="_blank"
+                      rel="me noopener noreferrer"
+                      className="text-ink-soft underline decoration-line underline-offset-4 hover:text-ink hover:decoration-ink"
+                    >
+                      {social.label}
+                    </a>
+                  ))}
+                </dd>
+              </div>
+            )}
+          </dl>
+        </div>
 
-          <Reveal className="lg:col-span-8" delay={120}>
-            <ContactForm />
-          </Reveal>
+        <div className="lg:col-span-8">
+          <ContactForm />
         </div>
       </section>
-    </>
+    </PageFrame>
   );
 }

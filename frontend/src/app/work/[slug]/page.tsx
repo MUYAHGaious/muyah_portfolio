@@ -4,11 +4,9 @@ import { notFound } from "next/navigation";
 
 import { JsonLd } from "@/components/JsonLd";
 import { Markdown } from "@/components/Markdown";
-import { StatusChip } from "@/components/StatusChip";
 import { ToConfirm } from "@/components/ToConfirm";
 import { PipelineDiagram } from "@/components/casestudy/PipelineDiagram";
 import { TalkbackReplay } from "@/components/demo/TalkbackReplay";
-import { Reveal } from "@/components/motion/Reveal";
 import { Button } from "@/components/ui/Button";
 import { getProject, getProjects, getSettings } from "@/lib/api";
 import { absolute, breadcrumbSchema, graph, projectSchema } from "@/lib/seo";
@@ -92,10 +90,10 @@ export default async function ProjectPage({ params }: Params) {
 
       <section className="shell pt-8 sm:pt-14">
         <div className="border-b border-line pb-10 sm:pb-14">
-          <div className="flex flex-wrap items-center gap-3 animate-rise">
-            <p className="readout flex-1">{header}</p>
-            <StatusChip status={project.status} />
-          </div>
+          <p className="font-mono text-micro text-ink-soft animate-rise">
+            {header}
+            {project.status === "in_build" && <span className="ml-3 text-amber">in build</span>}
+          </p>
 
           <div className="mt-6 grid gap-8 lg:grid-cols-12">
             <div className="lg:col-span-8">
@@ -132,13 +130,13 @@ export default async function ProjectPage({ params }: Params) {
             >
               {project.team_size && (
                 <div>
-                  <dt className="eyebrow">team</dt>
+                  <dt className="font-mono text-micro text-ink-faint">team</dt>
                   <dd className="mt-1 text-small text-ink">{project.team_size} people</dd>
                 </div>
               )}
               {project.tech.length > 0 && (
                 <div>
-                  <dt className="eyebrow">built with</dt>
+                  <dt className="font-mono text-micro text-ink-faint">built with</dt>
                   <dd className="mt-2 flex flex-wrap gap-1.5">
                     {project.tech.map((tech) => (
                       <span
@@ -158,10 +156,10 @@ export default async function ProjectPage({ params }: Params) {
 
       {project.metrics.length > 0 && (
         <section className="shell pt-10 sm:pt-14">
-          <Reveal>
-            <dl className="grid gap-px overflow-hidden rounded-[var(--r-lg)] border border-line bg-line sm:grid-cols-3">
+          <div>
+            <dl className="grid divide-y divide-line border-y border-line sm:grid-cols-3 sm:divide-x sm:divide-y-0">
               {project.metrics.map((metric) => (
-                <div key={metric.label} className="bg-surface/90 px-5 py-5">
+                <div key={metric.label} className="py-5 sm:px-6 sm:first:pl-0 sm:last:pr-0">
                   <dd className="text-h3 font-bold tracking-tight text-ink">
                     <ToConfirm text={metric.value} />
                   </dd>
@@ -174,16 +172,15 @@ export default async function ProjectPage({ params }: Params) {
                 </div>
               ))}
             </dl>
-          </Reveal>
+          </div>
         </section>
       )}
 
       {project.slug === "malegado" && (
         <section className="shell pt-10 sm:pt-14">
-          <Reveal className="grid gap-6 lg:grid-cols-12">
+          <div className="grid gap-6 lg:grid-cols-12">
             <div className="lg:col-span-5">
-              <p className="readout">talk-back</p>
-              <h2 className="mt-4 text-h3 font-bold tracking-tight text-ink">
+              <h2 className="text-h3 font-bold tracking-tight text-ink">
                 Speak, and be answered out loud.
               </h2>
               <p className="mt-3 text-small text-ink-soft">
@@ -194,24 +191,26 @@ export default async function ProjectPage({ params }: Params) {
             <div className="lg:col-span-7">
               <TalkbackReplay />
             </div>
-          </Reveal>
+          </div>
         </section>
       )}
 
       {project.pipeline.length > 0 && (
         <section className="shell pt-14 sm:pt-20">
-          <Reveal>
-            <p className="readout">pipeline · {project.pipeline.length} stages</p>
-            <div className="mt-5">
+          <div>
+            <h2 className="text-h3 font-bold tracking-tight text-ink">
+              The pipeline, in {project.pipeline.length} stages.
+            </h2>
+            <div className="mt-6">
               <PipelineDiagram stages={project.pipeline} />
             </div>
-          </Reveal>
+          </div>
         </section>
       )}
 
       {project.cover_image && (
         <section className="shell pt-10 sm:pt-14">
-          <Reveal>
+          <div>
             <img
               src={project.cover_image.url}
               srcSet={project.cover_image.srcset}
@@ -221,41 +220,42 @@ export default async function ProjectPage({ params }: Params) {
               height={project.cover_image.height}
               className="w-full rounded-[var(--r-lg)] border border-line"
             />
-          </Reveal>
+          </div>
         </section>
       )}
 
       {project.body_md && (
         <section className="shell pt-14 sm:pt-20">
-          <Reveal className="mx-auto max-w-3xl">
+          <div className="mx-auto max-w-3xl">
             <Markdown>{project.body_md}</Markdown>
-          </Reveal>
+          </div>
         </section>
       )}
 
       {others.length > 0 && (
         <section className="shell pt-20 sm:pt-28">
-          <Reveal className="mb-6">
-            <p className="readout">more work</p>
-          </Reveal>
-          <ul className="grid gap-4 sm:grid-cols-3">
-            {others.map((other, index) => (
-              <Reveal as="li" key={other.id} delay={index * 70}>
+          <h2 className="mb-5 text-h3 font-bold tracking-tight text-ink">More work.</h2>
+          <ul className="divide-y divide-line border-y border-line">
+            {others.map((other) => (
+              <li key={other.id}>
                 <Link
                   href={`/work/${other.slug}`}
-                  className="card card-lift group flex h-full flex-col justify-between gap-4 p-6"
+                  className="group flex flex-col gap-1 py-4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
                 >
-                  <span>
-                    <span className="block text-h4 font-bold tracking-tight text-ink group-hover:text-ember">
+                  <span className="min-w-0">
+                    <span className="block text-h4 font-bold tracking-tight text-ink group-hover:text-ember-deep">
                       {other.title}
                     </span>
                     {other.highlight && (
-                      <span className="mt-1.5 block text-small text-ink-soft">{other.highlight}</span>
+                      <span className="mt-1 block text-small text-ink-soft">{other.highlight}</span>
                     )}
                   </span>
-                  <StatusChip status={other.status} className="self-start" />
+                  <span className="shrink-0 font-mono text-micro text-ink-faint">
+                    {other.year}
+                    {other.status === "in_build" && " · in build"}
+                  </span>
                 </Link>
-              </Reveal>
+              </li>
             ))}
           </ul>
         </section>

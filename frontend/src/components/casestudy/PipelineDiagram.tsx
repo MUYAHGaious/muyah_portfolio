@@ -9,9 +9,9 @@ export function PipelineDiagram({ stages }: { stages: PipelineStage[] }) {
   if (stages.length === 0) return null;
 
   return (
-    <ol className="grid gap-px overflow-hidden rounded-[var(--r-lg)] border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+    <ol className="grid gap-x-8 gap-y-6 border-t border-line pt-6 sm:grid-cols-2 lg:grid-cols-3">
       {stages.map((stage, index) => (
-        <li key={stage.stage} className="relative bg-surface/90 p-5">
+        <li key={stage.stage} className="relative">
           <div className="flex items-center gap-3">
             <span className="font-mono text-micro text-ember">
               {String(index + 1).padStart(2, "0")}
